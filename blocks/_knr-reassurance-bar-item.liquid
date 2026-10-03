@@ -1,0 +1,52 @@
+{%- if block.settings.title != blank or block.settings.text != blank -%}
+  <div class="knr-reassurance-bar-item" data-knr-slide {{ block.shopify_attributes }}>
+    {%- if block.settings.title != blank -%}
+      <p class="knr-reassurance-bar-item__title">{{ block.settings.title }}</p>
+    {%- endif -%}
+    {%- if block.settings.text != blank -%}
+      <p class="knr-reassurance-bar-item__text">{{ block.settings.text }}</p>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .knr-reassurance-bar-item__title {
+    margin: 0;
+    font-size: var(--knr-fs-sm);
+    line-height: var(--knr-lh-xs);
+    text-transform: uppercase;
+  }
+
+  .knr-reassurance-bar-item__text {
+    margin: var(--knr-space-lg) 0 0;
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+  }
+
+  .knr-reassurance-bar-item__text a {
+    color: inherit;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Reassurance item",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "Text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reassurance item"
+    }
+  ]
+}
+{% endschema %}

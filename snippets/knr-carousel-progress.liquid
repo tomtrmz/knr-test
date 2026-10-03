@@ -1,0 +1,30 @@
+{% doc %}
+  @example
+  {% render 'knr-carousel-progress' %}
+{% enddoc %}
+
+<div class="knr-carousel-progress" data-knr-carousel-progress hidden aria-hidden="true">
+  <span class="knr-carousel-progress__thumb"></span>
+</div>
+
+{% stylesheet %}
+  .knr-carousel-progress {
+    position: relative;
+    width: 4rem;
+    height: 1px;
+    margin-inline: auto;
+    background-color: var(--knr-color-border);
+  }
+
+  .knr-carousel-progress[hidden] {
+    display: none;
+  }
+
+  .knr-carousel-progress__thumb {
+    position: absolute;
+    inset-block: 0;
+    left: calc(var(--knr-carousel-progress, 0) * (100% - var(--knr-carousel-visible, 1) * 100%));
+    width: calc(var(--knr-carousel-visible, 1) * 100%);
+    background-color: var(--knr-color-text);
+  }
+{% endstylesheet %}

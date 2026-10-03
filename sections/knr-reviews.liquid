@@ -1,0 +1,444 @@
+{%- liquid
+  assign reviews = product.metafields.custom.reviews.value
+  assign stats_count = 0
+  if reviews.size > 0
+    capture review_stats
+      render 'knr-review-stats', reviews: reviews
+    endcapture
+    assign review_stats = review_stats | split: '|'
+    assign stats_count = review_stats[0] | plus: 0
+  endif
+
+  if stats_count > 0
+    assign average = review_stats[1] | times: 1.0 | divided_by: stats_count | round: 1
+    assign reviews_sorted = reviews | sort: 'date' | reverse
+  endif
+
+  assign per_page = section.settings.reviews_per_page
+-%}
+
+<section id="knr-reviews" class="knr-reviews full-width">
+  {%- if section.settings.title != blank -%}
+    <h2 class="knr-reviews__title">{{ section.settings.title }}</h2>
+  {%- endif -%}
+
+  {%- if stats_count > 0 -%}
+    <knr-reviews class="knr-reviews__body" data-per-page="{{ per_page }}">
+      <div class="knr-reviews__summary">
+        <div class="knr-reviews__average">
+          <p class="knr-reviews__average-line">
+            {% render 'knr-rating-stars', rating: average %}
+            <span>{{ 'knr.reviews.average' | t: rating: average, max: 5 }}</span>
+          </p>
+          <p class="knr-reviews__count">{{ 'knr.reviews.based_on' | t: count: stats_count }}</p>
+        </div>
+
+        <ul class="knr-reviews__histogram" role="list" aria-label="{{ 'knr.reviews.histogram_label' | t | escape }}">
+          {%- for i in (1..5) -%}
+            {%- liquid
+              assign star = 6 | minus: i
+              assign stats_index = star | plus: 1
+              assign row_count = review_stats[stats_index] | plus: 0
+              assign row_percent = row_count | times: 100.0 | divided_by: stats_count
+              assign row_stars_label = 'knr.reviews.filter_option' | t: count: star
+            -%}
+            <li>
+              <button
+                type="button"
+                class="knr-reviews__histogram-row"
+                data-knr-reviews-rating="{{ star }}"
+                aria-pressed="false"
+                {% if row_count == 0 %}
+                  disabled
+                {% endif %}
+                aria-label="{{ 'knr.reviews.histogram_row' | t: stars: row_stars_label, count: row_count }}"
+              >
+                {% render 'knr-rating-stars', rating: star %}
+                <span class="knr-reviews__bar" style="--knr-reviews-bar: {{ row_percent }}%;"></span>
+                <span class="knr-reviews__bar-count" aria-hidden="true">{{ row_count }}</span>
+              </button>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        <div class="knr-reviews__actions">
+          {%- if section.settings.write_url != blank -%}
+            <a href="{{ section.settings.write_url }}" class="knr-reviews__button knr-reviews__button--primary">
+              {{- 'knr.reviews.write' | t -}}
+            </a>
+          {%- else -%}
+            <button type="button" class="knr-reviews__button knr-reviews__button--primary">
+              {{- 'knr.reviews.write' | t -}}
+            </button>
+          {%- endif -%}
+          {%- if section.settings.ask_url != blank -%}
+            <a href="{{ section.settings.ask_url }}" class="knr-reviews__button">{{ 'knr.reviews.ask' | t }}</a>
+          {%- else -%}
+            <button type="button" class="knr-reviews__button">{{ 'knr.reviews.ask' | t }}</button>
+          {%- endif -%}
+        </div>
+      </div>
+
+      <details class="knr-reviews__filter">
+        <summary class="knr-reviews__filter-toggle">
+          {% render 'knr-icon', name: 'filter' %}
+          {{ 'knr.reviews.filter' | t }}
+        </summary>
+        <fieldset class="knr-reviews__filter-options">
+          <legend class="knr-reviews__filter-legend">{{ 'knr.reviews.filter_legend' | t }}</legend>
+          {%- for i in (1..5) -%}
+            {%- assign star = 6 | minus: i -%}
+            <label class="knr-reviews__filter-option">
+              <input type="checkbox" value="{{ star }}" data-knr-reviews-filter>
+              {{ 'knr.reviews.filter_option' | t: count: star }}
+            </label>
+          {%- endfor -%}
+        </fieldset>
+      </details>
+
+      <div class="knr-reviews__list">
+        {%- for review in reviews_sorted -%}
+          {%- assign rating = review.rating.value | plus: 0 -%}
+          <article class="knr-reviews__item" data-knr-reviews-item data-rating="{{ rating }}">
+            <div class="knr-reviews__item-head">
+              {% render 'knr-rating-stars', rating: rating %}
+              {%- if review.date.value != blank -%}
+                <time datetime="{{ review.date.value | date: '%Y-%m-%d' }}">{{ review.date.value | date: '%d/%m/%y' }}</time>
+              {%- endif -%}
+            </div>
+            {%- if review.author.value != blank -%}
+              <div class="knr-reviews__author">
+                <p>{{ review.author.value }}</p>
+                {%- assign badges = review.badges.value -%}
+                {%- if badges.count > 0 -%}
+                  {% render 'knr-labels', labels: badges, small: true %}
+                {%- elsif review.verified.value -%}
+                  <ul class="knr-labels knr-labels--small" role="list">
+                    <li class="knr-labels__item">{{ 'knr.reviews.verified' | t }}</li>
+                  </ul>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+            {%- if review.title.value != blank -%}
+              <h3 class="knr-reviews__item-title">{{ review.title.value }}</h3>
+            {%- endif -%}
+            {%- if review.text.value != blank -%}
+              <p class="knr-reviews__item-body">{{ review.text.value | newline_to_br }}</p>
+            {%- endif -%}
+          </article>
+        {%- endfor -%}
+      </div>
+
+      <p class="knr-reviews__empty" data-knr-reviews-empty hidden>{{ 'knr.reviews.no_results' | t }}</p>
+
+      <button type="button" class="knr-reviews__button knr-reviews__more" data-knr-reviews-more hidden>
+        {{- 'knr.reviews.load_more' | t -}}
+      </button>
+    </knr-reviews>
+    <script src="{{ 'knr-reviews.js' | asset_url }}" defer></script>
+  {%- endif -%}
+
+  {% content_for 'blocks' %}
+</section>
+
+{% stylesheet %}
+  .knr-reviews {
+    margin-bottom: var(--knr-section-space-xl);
+    padding-inline: var(--knr-gutter);
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+    scroll-margin-top: var(--knr-header-height);
+  }
+
+  .knr-reviews__title {
+    margin: 0 0 var(--knr-space-xl);
+    font-size: var(--knr-fs-xl);
+    font-weight: 400;
+    line-height: var(--knr-lh-xl);
+    text-align: center;
+  }
+
+  .knr-reviews__body {
+    display: block;
+    max-width: var(--knr-width-narrow);
+    margin-inline: auto;
+  }
+
+  .knr-reviews p {
+    margin: 0;
+  }
+
+  .knr-reviews__summary {
+    display: grid;
+    gap: var(--knr-space-md);
+    justify-items: center;
+    margin-bottom: var(--knr-space-xl);
+  }
+
+  .knr-reviews__average {
+    display: grid;
+    gap: 0.3125rem;
+    justify-items: center;
+    color: var(--knr-color-accent);
+  }
+
+  .knr-reviews__average-line {
+    display: flex;
+    align-items: center;
+    gap: var(--knr-space-2xs);
+  }
+
+  .knr-reviews__histogram {
+    display: grid;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .knr-reviews__histogram-row {
+    display: flex;
+    align-items: center;
+    gap: var(--knr-space-2xs);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--knr-color-accent);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .knr-reviews__histogram-row:disabled {
+    cursor: default;
+  }
+
+  .knr-reviews__histogram-row[aria-pressed='true'] .knr-reviews__bar-count {
+    color: var(--knr-color-text);
+    text-decoration: underline;
+  }
+
+  .knr-reviews__histogram-row:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-reviews__bar {
+    width: 6.5rem;
+    height: 0.75rem;
+    background:
+      linear-gradient(var(--knr-color-sand), var(--knr-color-sand)) 0 0 / var(--knr-reviews-bar) 100% no-repeat,
+      var(--knr-color-surface);
+  }
+
+  .knr-reviews__bar-count {
+    min-width: 1rem;
+    text-align: start;
+  }
+
+  .knr-reviews__actions {
+    display: grid;
+    gap: var(--knr-space-2xs);
+    width: 100%;
+  }
+
+  .knr-reviews__button {
+    display: block;
+    padding: calc(0.875rem - 1px) var(--knr-space-lg);
+    border: 1px solid var(--knr-color-text);
+    border-radius: var(--knr-radius);
+    background-color: var(--knr-color-bg);
+    color: var(--knr-color-text);
+    font: inherit;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .knr-reviews__button--primary {
+    background-color: var(--knr-color-text);
+    color: var(--knr-color-bg);
+  }
+
+  .knr-reviews__button:focus-visible {
+    outline: 1px solid var(--knr-color-text);
+    outline-offset: 2px;
+  }
+
+  .knr-reviews__filter {
+    border-bottom: 1px solid var(--knr-color-border);
+  }
+
+  .knr-reviews__body:not(:defined) .knr-reviews__filter {
+    display: none;
+  }
+
+  .knr-reviews__filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--knr-space-xs);
+    height: 2.25rem;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .knr-reviews__filter-toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  .knr-reviews__filter-toggle:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-reviews__filter-toggle .knr-icon {
+    width: 0.875rem;
+    height: 0.625rem;
+  }
+
+  .knr-reviews__filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--knr-space-xs) var(--knr-space-md);
+    margin: 0;
+    padding: 0 0 var(--knr-space-md);
+    border: 0;
+  }
+
+  .knr-reviews__filter-legend {
+    width: 100%;
+    padding: 0;
+    margin-bottom: var(--knr-space-xs);
+    color: var(--knr-color-accent);
+  }
+
+  .knr-reviews__filter-option {
+    display: flex;
+    align-items: center;
+    gap: var(--knr-space-2xs);
+    cursor: pointer;
+  }
+
+  .knr-reviews__filter-option input {
+    margin: 0;
+    accent-color: var(--knr-color-text);
+  }
+
+  .knr-reviews__item {
+    display: grid;
+    gap: var(--knr-space-md);
+    padding: var(--knr-space-md) 0;
+    border-bottom: 1px solid var(--knr-color-border);
+  }
+
+  .knr-reviews__item[hidden] {
+    display: none;
+  }
+
+  .knr-reviews__item-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .knr-reviews__author {
+    display: flex;
+    align-items: center;
+    gap: var(--knr-space-xs);
+  }
+
+  .knr-reviews__item-title {
+    margin: 0;
+    font-size: inherit;
+    font-weight: 400;
+  }
+
+  .knr-reviews__item .knr-reviews__item-body {
+    margin-top: calc(var(--knr-space-xs) - var(--knr-space-md));
+  }
+
+  .knr-reviews__empty {
+    padding: var(--knr-space-md) 0;
+    color: var(--knr-color-accent);
+  }
+
+  .knr-reviews__more {
+    width: 15.625rem;
+    margin: var(--knr-space-xl) auto 0;
+  }
+
+  .knr-reviews__more[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 990px) {
+    .knr-reviews {
+    }
+
+    .knr-reviews__title {
+      margin-bottom: var(--knr-space-3xl);
+      font-size: var(--knr-fs-2xl);
+      line-height: var(--knr-lh-2xl);
+    }
+
+    .knr-reviews__summary {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      align-items: start;
+      justify-items: start;
+    }
+
+    .knr-reviews__average {
+      justify-items: start;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Customer reviews",
+  "class": "knr-reviews-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Avis clients"
+    },
+    {
+      "type": "range",
+      "id": "reviews_per_page",
+      "label": "Reviews shown before \"Load more\"",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "url",
+      "id": "write_url",
+      "label": "\"Write a review\" link",
+      "info": "Optional, e.g. the contact page. Without a link the button is shown but does nothing (demo)."
+    },
+    {
+      "type": "url",
+      "id": "ask_url",
+      "label": "\"Ask a question\" link",
+      "info": "Optional. Without a link the button is shown but does nothing (demo)."
+    },
+    {
+      "type": "paragraph",
+      "content": "Reviews come from the product metafield custom.reviews (knr_review entries)."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer reviews"
+    }
+  ]
+}
+{% endschema %}

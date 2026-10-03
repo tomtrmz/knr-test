@@ -1,0 +1,64 @@
+{% doc %}
+  @param {variant} variant - The variant whose price is rendered
+
+  @example
+  {% render 'knr-price', variant: product.selected_or_first_available_variant %}
+{% enddoc %}
+
+<div class="knr-price">
+  <div class="knr-price__main">
+    <span class="knr-price__current" data-knr-price>{{ variant.price | money }}</span>
+    <s
+      class="knr-price__compare"
+      data-knr-compare-price
+      {% unless variant.compare_at_price > variant.price %}
+        hidden
+      {% endunless %}
+    >
+      {{- variant.compare_at_price | money -}}
+    </s>
+  </div>
+
+  {%- capture unit_price_text -%}
+    {%- render 'knr-unit-price', variant: variant -%}
+  {%- endcapture -%}
+  <p
+    class="knr-price__unit"
+    data-knr-unit-price
+    {% if unit_price_text == blank %}
+      hidden
+    {% endif %}
+  >
+    {{- unit_price_text | strip -}}
+  </p>
+</div>
+
+{% stylesheet %}
+  .knr-price__main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--knr-space-xs);
+  }
+
+  .knr-price__current {
+    font-size: var(--knr-fs-lg);
+    line-height: var(--knr-lh-tight);
+  }
+
+  .knr-price__compare {
+    color: var(--knr-color-muted);
+    font-size: var(--knr-fs-xs);
+  }
+
+  .knr-price__unit {
+    margin-top: var(--knr-space-2xs);
+    color: var(--knr-color-accent);
+    font-size: var(--knr-fs-2xs);
+  }
+
+  .knr-price__compare[hidden],
+  .knr-price__unit[hidden] {
+    display: none;
+  }
+{% endstylesheet %}

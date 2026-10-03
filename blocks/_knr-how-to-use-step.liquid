@@ -1,0 +1,157 @@
+{%- liquid
+  assign image = block.settings.image
+  assign image_alt = image.alt | default: block.settings.title
+-%}
+
+<article class="knr-how-to-use-step" {{ block.shopify_attributes }}>
+  <div class="knr-how-to-use-step__media">
+    {%- if image -%}
+      {{
+        image
+        | image_url: width: 1000
+        | image_tag:
+          class: 'knr-how-to-use-step__image',
+          widths: '300, 450, 600, 800, 1000',
+          sizes: '(min-width: 990px) 33vw, 255px',
+          loading: 'lazy',
+          alt: image_alt
+        }}
+    {%- else -%}
+      {{ 'image' | placeholder_svg_tag: 'knr-how-to-use-step__image knr-how-to-use-step__image--placeholder' }}
+    {%- endif -%}
+  </div>
+
+  <div class="knr-how-to-use-step__body">
+    {%- if block.settings.title != blank -%}
+      <h3 class="knr-how-to-use-step__title">{{ block.settings.title }}</h3>
+    {%- endif -%}
+
+    {%- if block.settings.text != blank -%}
+      <knr-read-more
+        class="knr-how-to-use-step__read-more"
+        data-label-more="{{ 'knr.read_more.more' | t | escape }}"
+        data-label-less="{{ 'knr.read_more.less' | t | escape }}"
+      >
+        <p class="knr-how-to-use-step__text" data-knr-read-more-text>{{ block.settings.text | newline_to_br }}</p>
+        <button
+          type="button"
+          class="knr-how-to-use-step__more"
+          data-knr-read-more-button
+          aria-expanded="false"
+          hidden
+        >
+          {{- 'knr.read_more.more' | t -}}
+        </button>
+      </knr-read-more>
+    {%- endif -%}
+  </div>
+</article>
+
+{% stylesheet %}
+  .knr-how-to-use-step {
+    counter-increment: knr-how-to-use-step;
+  }
+
+  .knr-how-to-use-step__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .knr-how-to-use-step__image--placeholder {
+    background-color: var(--knr-color-surface);
+  }
+
+  .knr-how-to-use-step__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--knr-space-md);
+    padding: var(--knr-space-md) var(--knr-space-lg) 0;
+  }
+
+  .knr-how-to-use-step__body::before {
+    content: counter(knr-how-to-use-step, decimal-leading-zero);
+    font-size: var(--knr-fs-sm);
+  }
+
+  .knr-how-to-use-step__title {
+    margin: 0;
+    font-size: var(--knr-fs-xl);
+    font-weight: 400;
+    line-height: var(--knr-lh-xl);
+  }
+
+  .knr-how-to-use-step__text {
+    margin: 0;
+    font-size: var(--knr-fs-sm);
+    line-height: var(--knr-lh-lg);
+  }
+
+  .knr-how-to-use-step__more {
+    margin-top: var(--knr-space-2xs);
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid currentcolor;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+    cursor: pointer;
+  }
+
+  .knr-how-to-use-step__more[hidden] {
+    display: none;
+  }
+
+  .knr-how-to-use-step__more:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 989px) {
+    .knr-how-to-use-step__read-more:not(.is-expanded) .knr-how-to-use-step__text {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+    }
+  }
+
+  @media (min-width: 990px) {
+    .knr-how-to-use-step__more {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Step",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Step"
+    }
+  ]
+}
+{% endschema %}

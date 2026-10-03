@@ -1,0 +1,471 @@
+{%- liquid
+  assign about_title = section.settings.about_title
+  assign certification_image = section.settings.certification_image
+  assign current_year = 'now' | date: '%Y'
+
+  assign show_countries = section.settings.show_country_selector
+  assign show_languages = section.settings.show_language_selector
+  assign menu_links = section.settings.menu.links
+
+  assign social_networks = 'facebook,instagram,tiktok,linkedin' | split: ','
+-%}
+
+<footer class="knr-footer full-width" style="--knr-footer-bg: {{ section.settings.background }};">
+  <div class="knr-footer__main">
+    <div class="knr-footer__columns">
+      <div class="knr-footer__menus" style="--knr-footer-menu-columns: {{ menu_links.size | at_least: 1 }};">
+        {%- for link in menu_links -%}
+          {% render 'knr-footer-menu', link: link %}
+        {%- endfor -%}
+      </div>
+
+      <div class="knr-footer__about">
+        {%- if about_title != blank -%}
+          <h2 class="knr-footer__about-title">{{ about_title }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.about_text != blank -%}
+          <div class="knr-footer__about-text">{{ section.settings.about_text }}</div>
+        {%- endif -%}
+
+        {%- if certification_image or section.settings.certification_caption != blank -%}
+          <div class="knr-footer__certification">
+            {%- if certification_image -%}
+              {%- assign certification_alt = certification_image.alt | default: section.settings.certification_caption -%}
+              {{
+                certification_image
+                | image_url: width: 200
+                | image_tag:
+                  class: 'knr-footer__certification-image',
+                  loading: 'lazy',
+                  alt: certification_alt
+              }}
+            {%- endif -%}
+            {%- if section.settings.certification_caption != blank -%}
+              <p class="knr-footer__certification-caption">{{ section.settings.certification_caption }}</p>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.certificate_label != blank -%}
+          <p class="knr-footer__certificate">
+            {%- if section.settings.certificate_url != blank -%}
+              <a href="{{ section.settings.certificate_url }}" class="knr-footer__certificate-link">
+                {{- section.settings.certificate_label -}}
+              </a>
+            {%- else -%}
+              <span class="knr-footer__certificate-link">{{ section.settings.certificate_label }}</span>
+            {%- endif -%}
+          </p>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if section.settings.show_logo and settings.logo -%}
+      <a href="{{ routes.root_url }}" class="knr-footer__wordmark">
+        {{
+          settings.logo
+          | image_url: width: 2880
+          | image_tag:
+            class: 'knr-footer__wordmark-image',
+            widths: '400, 800, 1200, 1600, 2000, 2880',
+            sizes: '100vw',
+            loading: 'lazy',
+            alt: shop.name
+        }}
+      </a>
+    {%- endif -%}
+  </div>
+
+  <div class="knr-footer__bottom">
+    {%- if show_countries or show_languages -%}
+      <knr-localization class="knr-footer__localization">
+        {%- form 'localization', class: 'knr-footer__localization-form' -%}
+          {%- if show_countries -%}
+            <div class="knr-footer__select">
+              <select
+                name="country_code"
+                class="knr-footer__select-input"
+                aria-label="{{ 'knr.footer.country_label' | t | escape }}"
+              >
+                {%- for country in localization.available_countries -%}
+                  <option
+                    value="{{ country.iso_code }}"
+                    {% if country.iso_code == localization.country.iso_code %}
+                      selected
+                    {% endif %}
+                  >
+                    {{- country.name }} ({{ country.currency.symbol }})
+                  </option>
+                {%- endfor -%}
+              </select>
+              <span class="knr-footer__select-chevron">{% render 'knr-icon', name: 'chevron-down' %}</span>
+            </div>
+          {%- endif -%}
+
+          {%- if show_languages -%}
+            <div class="knr-footer__select">
+              <select
+                name="language_code"
+                class="knr-footer__select-input"
+                aria-label="{{ 'knr.footer.language_label' | t | escape }}"
+              >
+                {%- for language in localization.available_languages -%}
+                  <option
+                    value="{{ language.iso_code }}"
+                    {% if language.iso_code == localization.language.iso_code %}
+                      selected
+                    {% endif %}
+                  >
+                    {{- language.endonym_name | capitalize -}}
+                  </option>
+                {%- endfor -%}
+              </select>
+              <span class="knr-footer__select-chevron">{% render 'knr-icon', name: 'chevron-down' %}</span>
+            </div>
+          {%- endif -%}
+
+          <button type="submit" class="knr-footer__localization-submit">{{ 'knr.footer.update' | t }}</button>
+        {%- endform -%}
+      </knr-localization>
+      <script src="{{ 'knr-localization.js' | asset_url }}" defer></script>
+    {%- else -%}
+      <span class="knr-footer__localization" aria-hidden="true"></span>
+    {%- endif -%}
+
+    <p class="knr-footer__copyright">
+      {{- 'knr.footer.copyright' | t: year: current_year, shop: shop.name -}}
+    </p>
+
+    <ul class="knr-footer__social">
+      {%- for network in social_networks -%}
+        {%- assign setting_id = 'social_' | append: network -%}
+        {%- assign social_url = settings[setting_id] -%}
+        {%- assign social_label_key = 'knr.footer.social.' | append: network -%}
+        <li>
+          {%- if social_url != blank -%}
+            <a href="{{ social_url }}" class="knr-footer__social-link" aria-label="{{ social_label_key | t | escape }}">
+              {% render 'knr-icon', name: network %}
+            </a>
+          {%- else -%}
+            <span class="knr-footer__social-link" role="img" aria-label="{{ social_label_key | t | escape }}">
+              {% render 'knr-icon', name: network %}
+            </span>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</footer>
+
+<script src="{{ 'knr-disclosure.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+  .knr-footer {
+    background-color: var(--knr-footer-bg, var(--knr-color-surface));
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+  }
+
+  .knr-footer__main {
+    display: grid;
+    gap: var(--knr-space-xl);
+    padding: var(--knr-space-2xl) var(--knr-gutter) var(--knr-space-xl);
+  }
+
+  .knr-footer__columns {
+    display: grid;
+    gap: var(--knr-space-xl);
+  }
+
+  .knr-footer__menus {
+    border-top: 1px solid var(--knr-color-sand);
+  }
+
+  .knr-footer__menus:not(:has(.knr-footer-menu)) {
+    display: none;
+  }
+
+  .knr-footer__about {
+    display: grid;
+    gap: var(--knr-space-lg);
+    align-content: start;
+  }
+
+  .knr-footer__about-title {
+    margin: 0;
+    font-size: inherit;
+    font-weight: 400;
+  }
+
+  .knr-footer__about-text p {
+    margin: 0;
+  }
+
+  .knr-footer__certification {
+    display: grid;
+    gap: var(--knr-space-md);
+    justify-items: start;
+  }
+
+  .knr-footer__certification-image {
+    display: block;
+    width: 3rem;
+    height: auto;
+  }
+
+  .knr-footer__certification-caption {
+    margin: 0;
+  }
+
+  .knr-footer__certificate {
+    margin: calc(var(--knr-space-md) - var(--knr-space-lg)) 0 0;
+    padding-top: var(--knr-space-md);
+    border-top: 1px solid var(--knr-color-sand);
+  }
+
+  .knr-footer__certificate-link {
+    border-bottom: 1px solid currentcolor;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .knr-footer__certificate-link:focus-visible,
+  .knr-footer__wordmark:focus-visible,
+  .knr-footer__social-link:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-footer__wordmark {
+    display: block;
+    margin-inline: calc(-1 * var(--knr-gutter));
+  }
+
+  .knr-footer__wordmark-image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .knr-footer__bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--knr-space-md);
+    padding: var(--knr-space-xl) var(--knr-gutter);
+    border-top: 1px solid var(--knr-color-sand);
+    line-height: var(--knr-lh-sm);
+    text-align: center;
+  }
+
+  .knr-footer__localization-form {
+    display: flex;
+    gap: var(--knr-space-md);
+  }
+
+  .knr-footer__select {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .knr-footer__select-input {
+    padding: 0 calc(1rem + var(--knr-space-2xs)) 0 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  .knr-footer__select-input:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-footer__select-chevron {
+    position: absolute;
+    right: 0;
+    display: grid;
+    place-items: center;
+    width: 1rem;
+    height: 1.25rem;
+    pointer-events: none;
+  }
+
+  .knr-footer__localization:defined .knr-footer__localization-submit {
+    display: none;
+  }
+
+  .knr-footer__localization-submit {
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid currentcolor;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .knr-footer__copyright {
+    margin: 0;
+  }
+
+  .knr-footer__social {
+    display: flex;
+    gap: var(--knr-space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .knr-footer__social-link {
+    display: block;
+    color: inherit;
+  }
+
+  .knr-footer__social-link .knr-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  @media (min-width: 990px) {
+    .knr-footer__main {
+      gap: 0;
+      padding: var(--knr-space-3xl) var(--knr-gutter);
+    }
+
+    .knr-footer__columns {
+      grid-template-columns: minmax(0, 1fr) 25rem;
+      column-gap: var(--knr-space-xl);
+      margin-bottom: var(--knr-space-xl);
+    }
+
+    .knr-footer__about {
+      grid-column: 2;
+    }
+
+    .knr-footer__menus {
+      display: grid;
+      grid-template-columns: repeat(var(--knr-footer-menu-columns), minmax(0, 1fr));
+      column-gap: var(--knr-space-xl);
+      border-top: 0;
+    }
+
+    .knr-footer__wordmark {
+      margin-inline: 0;
+    }
+
+    .knr-footer__bottom {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      line-height: var(--knr-lh-md);
+    }
+
+    .knr-footer__localization {
+      justify-self: start;
+    }
+
+    .knr-footer__social {
+      justify-self: end;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Footer",
+  "class": "knr-footer-section",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "info": "Each top-level link is a column (its title); its nested links are the column's links."
+    },
+    {
+      "type": "header",
+      "content": "About column"
+    },
+    {
+      "type": "text",
+      "id": "about_title",
+      "label": "Title"
+    },
+    {
+      "type": "richtext",
+      "id": "about_text",
+      "label": "Text"
+    },
+    {
+      "type": "image_picker",
+      "id": "certification_image",
+      "label": "Certification image"
+    },
+    {
+      "type": "text",
+      "id": "certification_caption",
+      "label": "Certification caption"
+    },
+    {
+      "type": "url",
+      "id": "certificate_url",
+      "label": "Certificate link"
+    },
+    {
+      "type": "text",
+      "id": "certificate_label",
+      "label": "Certificate link label",
+      "default": "Voir le certificat"
+    },
+    {
+      "type": "header",
+      "content": "Bottom bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_logo",
+      "label": "Show the logo (Theme settings > Logo)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_country_selector",
+      "label": "Show the country / currency selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_language_selector",
+      "label": "Show the language selector",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "Social links: Theme settings > Social media."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Background color",
+      "default": "#F9F8F5"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer"
+    }
+  ],
+  "enabled_on": {
+    "groups": ["footer"]
+  }
+}
+{% endschema %}

@@ -1,0 +1,318 @@
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign show_picker = false
+  if section.settings.show_variant_picker and product.has_only_default_variant == false
+    assign show_picker = true
+  endif
+-%}
+
+<knr-sticky-atc class="knr-sticky-atc" inert>
+  <div class="knr-sticky-atc__inner">
+    {%- if product.featured_media -%}
+      {{
+        product.featured_media
+        | image_url: width: 240
+        | image_tag:
+          class: 'knr-sticky-atc__image',
+          widths: '80, 160, 240',
+          sizes: '80px',
+          loading: 'lazy',
+          alt: ''
+      }}
+    {%- endif -%}
+
+    <div class="knr-sticky-atc__info">
+      <p class="knr-sticky-atc__title">{{ product.title }}</p>
+
+      {%- if show_picker -%}
+        <div class="knr-sticky-atc__variants">
+          {% render 'knr-variant-picker', product: product, id_prefix: section.id, show_legend: false %}
+        </div>
+      {%- endif -%}
+
+      <div class="knr-sticky-atc__price">
+        {% render 'knr-price', variant: variant %}
+      </div>
+    </div>
+
+    <knr-cart-form
+      class="knr-sticky-atc__buy"
+      data-error-message="{{ 'knr.cart.error' | t | escape }}"
+      data-added-label="{{ 'knr.cart.added' | t | escape }}"
+    >
+      {%- form 'product', product, class: 'knr-sticky-atc__form' -%}
+        <input type="hidden" name="id" value="{{ variant.id }}" data-knr-variant-id>
+
+        {%- if section.settings.show_quantity -%}
+          <input
+            type="number"
+            name="quantity"
+            value="1"
+            min="1"
+            class="knr-sticky-atc__quantity"
+            aria-label="{{ 'knr.sticky_atc.quantity' | t }}"
+          >
+        {%- endif -%}
+
+        <button
+          type="submit"
+          name="add"
+          class="knr-sticky-atc__add-button"
+          data-knr-add-button
+          data-label-add="{{ 'knr.product.add_to_cart' | t | escape }}"
+          data-label-sold-out="{{ 'knr.product.sold_out' | t | escape }}"
+          {% unless variant.available %}
+            disabled
+          {% endunless %}
+        >
+          <span class="knr-sticky-atc__add-label" data-knr-add-label aria-live="polite">
+            {%- if variant.available -%}
+              {{- 'knr.product.add_to_cart' | t -}}
+            {%- else -%}
+              {{- 'knr.product.sold_out' | t -}}
+            {%- endif -%}
+          </span>
+        </button>
+
+        <p class="knr-sticky-atc__error" role="alert" data-knr-cart-error hidden></p>
+      {%- endform -%}
+    </knr-cart-form>
+  </div>
+</knr-sticky-atc>
+
+<script src="{{ 'knr-sticky-atc.js' | asset_url }}" defer></script>
+<script src="{{ 'knr-cart-form.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+  .knr-sticky-atc {
+    position: fixed;
+    z-index: 20;
+    inset: auto 0 0;
+    display: block;
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      opacity 300ms ease,
+      transform 300ms ease;
+  }
+
+  .knr-sticky-atc.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .knr-sticky-atc {
+      transition: none;
+    }
+  }
+
+  .knr-sticky-atc__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--knr-space-sm);
+    padding: var(--knr-space-sm) var(--knr-space-md);
+    border-top: 1px solid var(--knr-color-border);
+    background-color: var(--knr-color-bg);
+  }
+
+  .knr-sticky-atc__image {
+    display: none;
+  }
+
+  .knr-sticky-atc__info {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'title price'
+      'variants variants';
+    column-gap: var(--knr-space-md);
+    row-gap: var(--knr-space-xs);
+    align-items: center;
+  }
+
+  .knr-sticky-atc__title {
+    grid-area: title;
+    margin: 0;
+    overflow: hidden;
+    font-size: var(--knr-fs-xs);
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .knr-sticky-atc__variants {
+    grid-area: variants;
+  }
+
+  .knr-sticky-atc__price {
+    grid-area: price;
+  }
+
+  .knr-sticky-atc__price .knr-price__current {
+    font-size: var(--knr-fs-xs);
+  }
+
+  .knr-sticky-atc__price .knr-price__unit {
+    display: none;
+  }
+
+  .knr-sticky-atc__form {
+    position: relative;
+    display: flex;
+    gap: var(--knr-space-xs);
+  }
+
+  .knr-sticky-atc__quantity {
+    width: 4rem;
+    min-height: var(--knr-control-height);
+    padding: 0 var(--knr-space-xs);
+    border: 1px solid var(--knr-color-border);
+    border-radius: var(--knr-radius);
+    background-color: var(--knr-color-bg);
+    font-size: var(--knr-fs-xs);
+    text-align: center;
+  }
+
+  .knr-sticky-atc__quantity:focus-visible {
+    outline: 1px solid var(--knr-color-text);
+    outline-offset: 2px;
+  }
+
+  .knr-sticky-atc__add-button {
+    position: relative;
+    flex: 1;
+    min-height: var(--knr-control-height);
+    padding: var(--knr-space-xs) var(--knr-space-lg);
+    border: 1px solid var(--knr-color-text);
+    border-radius: var(--knr-radius);
+    background-color: var(--knr-color-text);
+    color: var(--knr-color-bg);
+    font: inherit;
+    font-size: var(--knr-fs-xs);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .knr-sticky-atc__add-button:hover {
+    opacity: 0.85;
+  }
+
+  .knr-sticky-atc__add-button:focus-visible {
+    outline: 1px solid var(--knr-color-text);
+    outline-offset: 2px;
+  }
+
+  .knr-sticky-atc__add-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .knr-sticky-atc__add-button[aria-busy='true'] .knr-sticky-atc__add-label {
+    visibility: hidden;
+  }
+
+  .knr-sticky-atc__add-button[aria-busy='true']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 1rem;
+    height: 1rem;
+    margin: auto;
+    border: 1px solid currentcolor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: knr-sticky-atc-spin 700ms linear infinite;
+  }
+
+  @keyframes knr-sticky-atc-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  .knr-sticky-atc__error {
+    position: absolute;
+    bottom: calc(100% + var(--knr-space-xs));
+    right: 0;
+    margin: 0;
+    padding: var(--knr-space-2xs) var(--knr-space-xs);
+    background-color: var(--knr-color-bg);
+    color: var(--knr-color-error);
+    font-size: var(--knr-fs-2xs);
+  }
+
+  .knr-sticky-atc__error[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 990px) {
+    .knr-sticky-atc {
+      inset: auto var(--knr-gutter) var(--knr-space-lg) auto;
+      width: min(34rem, calc(100% - var(--knr-gutter) * 2));
+    }
+
+    .knr-sticky-atc__inner {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--knr-space-md);
+      padding: var(--knr-space-xs);
+      border: 0;
+      box-shadow: 0 4px 24px rgb(0 0 0 / 8%);
+    }
+
+    .knr-sticky-atc__image {
+      display: block;
+      width: 5rem;
+      height: 5rem;
+      object-fit: cover;
+    }
+
+    .knr-sticky-atc__info {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'title'
+        'variants'
+        'price';
+    }
+
+    .knr-sticky-atc__add-button {
+      padding-inline: var(--knr-space-lg);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Sticky add to cart",
+  "class": "knr-sticky-atc-section",
+  "enabled_on": {
+    "templates": [
+      "product"
+    ]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows up when the main \"Add to cart\" button scrolls out of view, on mobile and desktop."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_variant_picker",
+      "label": "Show size selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quantity",
+      "label": "Show quantity selector",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sticky add to cart"
+    }
+  ]
+}
+{% endschema %}

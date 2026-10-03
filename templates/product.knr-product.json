@@ -1,0 +1,257 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "knr-product-main",
+      "blocks": {
+        "reassurance": {
+          "type": "knr-reassurance",
+          "static": true,
+          "settings": {
+            "delivery_days": 2,
+            "interval": 5
+          },
+          "blocks": {
+            "message_shipping": {
+              "type": "_knr-reassurance-message",
+              "settings": {
+                "text": "Livraison offerte dès 60 €"
+              },
+              "blocks": {}
+            },
+            "message_returns": {
+              "type": "_knr-reassurance-message",
+              "settings": {
+                "text": "Retours gratuits sous 30 jours"
+              },
+              "blocks": {}
+            },
+            "message_payment": {
+              "type": "_knr-reassurance-message",
+              "settings": {
+                "text": "Paiement 100 % sécurisé"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "message_shipping",
+            "message_returns",
+            "message_payment"
+          ]
+        },
+        "accordions": {
+          "type": "knr-accordions",
+          "static": true,
+          "settings": {},
+          "blocks": {
+            "accordion_description": {
+              "type": "_knr-accordion",
+              "settings": {
+                "title": "Description",
+                "content": "description",
+                "open": true
+              },
+              "blocks": {}
+            },
+            "accordion_benefits": {
+              "type": "_knr-accordion",
+              "settings": {
+                "title": "Bienfaits",
+                "content": "benefits",
+                "open": false
+              },
+              "blocks": {}
+            },
+            "accordion_ingredients": {
+              "type": "_knr-accordion",
+              "settings": {
+                "title": "Ingrédients clés",
+                "content": "key_ingredients",
+                "open": false
+              },
+              "blocks": {}
+            },
+            "accordion_skin_types": {
+              "type": "_knr-accordion",
+              "settings": {
+                "title": "Adapté aux peaux",
+                "content": "skin_types",
+                "open": false
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "accordion_description",
+            "accordion_benefits",
+            "accordion_ingredients",
+            "accordion_skin_types"
+          ]
+        },
+        "complementary": {
+          "type": "knr-complementary",
+          "static": true,
+          "settings": {
+            "title": "Complétez votre rituel"
+          },
+          "blocks": {}
+        }
+      },
+      "settings": {
+        "show_breadcrumb": true,
+        "breadcrumb_show_product": false,
+        "yuka_label": "Yuka",
+        "yuka_scale": "100",
+        "inci_label": "INCI Beauty",
+        "inci_scale": "20"
+      }
+    },
+    "brand_statement": {
+      "type": "knr-brand-statement",
+      "settings": {
+        "image": "shopify://shop_images/engagement-desktop.png",
+        "image_mobile": "shopify://shop_images/engagement-mobile.jpg",
+        "max_height": 90,
+        "overlay_opacity": 0,
+        "eyebrow": "Notre engagement pour une beauté régénérée",
+        "quote": "Fusionnant l'huile de rosier muscat, le rétinol végétal et l'extrait de cactus, notre sérum pénètre en profondeur pour stimuler le renouvellement cellulaire, atténuer les rides et redonner à la peau son éclat et sa fermeté naturels.",
+        "author": "Sophie M."
+      }
+    },
+    "how_to_use": {
+      "type": "knr-how-to-use",
+      "blocks": {
+        "step_1": {
+          "type": "_knr-how-to-use-step",
+          "settings": {
+            "image": "shopify://shop_images/how-to-use-1.jpg",
+            "title": "Régénérer & Lisser",
+            "text": "Concentré de pureté active. Huile végétale aux propriétés anti-oxydantes puissantes pour un éclat retrouvé."
+          },
+          "blocks": {}
+        },
+        "step_2": {
+          "type": "_knr-how-to-use-step",
+          "settings": {
+            "image": "shopify://shop_images/how-to-use-2.jpg",
+            "title": "Hydrater & Unifier",
+            "text": "Éclat et uniformité retrouvés. Cible les taches et les irrégularités de grain de peau."
+          },
+          "blocks": {}
+        },
+        "step_3": {
+          "type": "_knr-how-to-use-step",
+          "settings": {
+            "image": "shopify://shop_images/how-to-use-3.jpg",
+            "title": "Nourrir & Raffermir",
+            "text": "Fermeté et nutrition intense. Répare la barrière cutanée et lisse les contours du visage."
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "step_1",
+        "step_2",
+        "step_3"
+      ],
+      "settings": {
+        "title": "How to use"
+      }
+    },
+    "before_after": {
+      "type": "knr-before-after",
+      "blocks": {
+        "review_1": {
+          "type": "_knr-before-after-review",
+          "settings": {
+            "rating": 5,
+            "author": "Clara T.",
+            "quote": "J'utilise ce sérum depuis trois mois et la différence est saisissante. Mes rides d'expression se sont considérablement atténuées et mon teint a retrouvé une luminosité que je n'avais plus depuis des années. Une texture soyeuse qui pénètre instantanément. Je ne peux plus m'en passer."
+          },
+          "blocks": {}
+        },
+        "knr_before_after_review_6A6DKJ": {
+          "type": "_knr-before-after-review",
+          "name": "Review",
+          "settings": {
+            "rating": 3,
+            "author": "Lorem Ipsum",
+            "quote": "Le lorem ipsum est, en imprimerie, une suite de mots sans signification utilisée à titre provisoire pour calibrer une mise en page, le texte définitif venant remplacer le faux-texte dès qu'il est prêt ou que la mise en page est achevée. Généralement, on utilise un texte en faux latin, le Lorem ipsum ou Lipsum."
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "review_1",
+        "knr_before_after_review_6A6DKJ"
+      ],
+      "settings": {
+        "title": "Ce que disent nos clientes",
+        "text": "Des transformations visibles dès 4 semaines. Nos clientes témoignent d'une peau visiblement régénérée, plus ferme et lumineuse.",
+        "image_before": "shopify://shop_images/before.jpg",
+        "image_after": "shopify://shop_images/after.jpg",
+        "before_label": "Before",
+        "after_label": "After",
+        "background": "#f9f8f5"
+      }
+    },
+    "faq": {
+      "type": "knr-faq",
+      "settings": {
+        "title": "Questions fréquentes",
+        "open_first": true
+      }
+    },
+    "latest_news": {
+      "type": "knr-latest-news",
+      "settings": {
+        "title": "Latest news",
+        "blog": "news",
+        "articles_count": 4,
+        "link_label": "Voir tous les articles"
+      }
+    },
+    "newsletter": {
+      "type": "knr-newsletter",
+      "settings": {
+        "image": "shopify://shop_images/newsletter.jpg",
+        "title": "L'alliance de la science botanique et du luxe naturel pour une peau visiblement rajeunie en 4 semaines.",
+        "show_product_title": false,
+        "disclaimer": "Formule brevetée, testée dermatologiquement, 97 % d'ingrédients d'origine naturelle."
+      }
+    },
+    "sticky_atc": {
+      "type": "knr-sticky-atc",
+      "settings": {
+        "show_variant_picker": true,
+        "show_quantity": false
+      }
+    },
+    "reviews": {
+      "type": "knr-reviews",
+      "settings": {
+        "title": "Avis clients"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "brand_statement",
+    "how_to_use",
+    "before_after",
+    "faq",
+    "reviews",
+    "latest_news",
+    "newsletter",
+    "sticky_atc"
+  ]
+}

@@ -1,0 +1,113 @@
+{% doc %}
+  @param {product} product - The product
+  @param {string} id_prefix - Unique prefix for the radio names (e.g. the section id)
+  @param {boolean} [show_legend] - false hides the visible legend (the group keeps an aria-label)
+
+  @example
+  {% render 'knr-variant-picker', product: product, id_prefix: section.id %}
+{% enddoc %}
+
+{%- unless product.has_only_default_variant -%}
+  <div class="knr-variant-picker">
+    {%- for option in product.options_with_values -%}
+      <fieldset
+        class="knr-variant-picker__fieldset"
+        {% if show_legend == false %}
+          aria-label="{{ option.name | escape }}"
+        {% endif %}
+      >
+        {%- unless show_legend == false -%}
+          <legend class="knr-variant-picker__legend">{{ option.name }}</legend>
+        {%- endunless -%}
+
+        <div class="knr-variant-picker__options">
+          {%- for value in option.values -%}
+            <label
+              class="knr-variant-picker__option{% unless value.available %} knr-variant-picker__option--unavailable{% endunless %}"
+            >
+              <input
+                type="radio"
+                class="knr-variant-picker__input"
+                name="{{ id_prefix }}-option-{{ option.position }}"
+                value="{{ value | escape }}"
+                data-knr-option
+                data-option-position="{{ option.position }}"
+                {% if value.selected %}
+                  checked
+                {% endif %}
+              >
+              {{- value -}}
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endfor -%}
+  </div>
+{%- endunless -%}
+
+{% stylesheet %}
+  .knr-variant-picker {
+    display: grid;
+    gap: var(--knr-space-md);
+  }
+
+  .knr-variant-picker__fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .knr-variant-picker__legend {
+    margin-bottom: var(--knr-space-sm);
+    padding: 0;
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+  }
+
+  .knr-variant-picker__options {
+    display: flex;
+  }
+
+  .knr-variant-picker__option {
+    position: relative;
+    flex: 1;
+    border-bottom: 1px solid var(--knr-color-border);
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .knr-variant-picker__option:has(:checked) {
+    border-bottom-color: var(--knr-color-text);
+  }
+
+  .knr-variant-picker__option:has(:focus-visible) {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-variant-picker__option--unavailable {
+    color: var(--knr-color-muted);
+    text-decoration: line-through;
+  }
+
+  .knr-variant-picker__input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    appearance: none;
+    cursor: pointer;
+  }
+
+  @media (min-width: 990px) {
+    .knr-variant-picker__options {
+      gap: 0.625rem;
+    }
+
+    .knr-variant-picker__option {
+      flex: none;
+      border-bottom-color: transparent;
+    }
+  }
+{% endstylesheet %}

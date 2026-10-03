@@ -1,0 +1,82 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "t:general.footer",
+  "sections": {
+    "reassurance_bar": {
+      "type": "knr-reassurance-bar",
+      "blocks": {
+        "item_1": {
+          "type": "_knr-reassurance-bar-item",
+          "settings": {
+            "title": "Livraison offerte",
+            "text": "Livraison offerte dès 60 € d'achat en France métropolitaine."
+          },
+          "blocks": {}
+        },
+        "item_2": {
+          "type": "_knr-reassurance-bar-item",
+          "settings": {
+            "title": "Retours gratuits",
+            "text": "Retours acceptés jusqu'à 30 jours après réception."
+          },
+          "blocks": {}
+        },
+        "item_3": {
+          "type": "_knr-reassurance-bar-item",
+          "settings": {
+            "title": "Paiement sécurisé",
+            "text": "Paiement 100 % sécurisé par carte bancaire, PayPal ou virement."
+          },
+          "blocks": {}
+        },
+        "item_4": {
+          "type": "_knr-reassurance-bar-item",
+          "settings": {
+            "title": "Service client",
+            "text": "Du lundi au vendredi de 9h à 18h par email et téléphone."
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3",
+        "item_4"
+      ],
+      "settings": {
+        "background": "#dcd5c3",
+        "interval": 5
+      }
+    },
+    "knr_footer": {
+      "type": "knr-footer",
+      "settings": {
+        "menu": "footer",
+        "about_title": "À propos de Maison Célestine",
+        "about_text": "<p>Maison Célestine est une marque de soins anti-âge haut de gamme formulée autour d’actifs rares et certifiés biologiques, guidée par une expertise médicale et un rituel simple, précis et efficace.</p>",
+        "certification_image": "shopify://shop_images/cosmos-organic.png",
+        "certification_caption": "Certifié COSMOS ORGANIC par ECOCERT Greenlife",
+        "certificate_url": "",
+        "certificate_label": "Voir le certificat",
+        "show_logo": true,
+        "show_country_selector": true,
+        "show_language_selector": true,
+        "background": "#f9f8f5"
+      }
+    }
+  },
+  "order": [
+    "reassurance_bar",
+    "knr_footer"
+  ]
+}

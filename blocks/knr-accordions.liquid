@@ -1,0 +1,27 @@
+{% doc %}
+  @example
+  {% content_for 'block', type: 'knr-accordions', id: 'accordions' %}
+{% enddoc %}
+
+<div class="knr-accordions" {{ block.shopify_attributes }}>
+  {% content_for 'blocks' %}
+</div>
+
+<script src="{{ 'knr-disclosure.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+  .knr-accordions {
+    margin-top: var(--knr-space-lg);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Accordions",
+  "blocks": [
+    {
+      "type": "_knr-accordion"
+    }
+  ]
+}
+{% endschema %}

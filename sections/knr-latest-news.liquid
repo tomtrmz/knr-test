@@ -1,0 +1,256 @@
+{%- liquid
+  assign blog = section.settings.blog
+  assign articles_count = section.settings.articles_count
+-%}
+
+{%- if blog != blank and blog.articles_count > 0 -%}
+  <knr-carousel class="knr-latest-news full-width">
+    {%- if section.settings.title != blank -%}
+      <h2 class="knr-latest-news__title">{{ section.settings.title }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.link_label != blank -%}
+      <a href="{{ blog.url }}" class="knr-latest-news__link">{{ section.settings.link_label }}</a>
+    {%- endif -%}
+
+    <div class="knr-latest-news__list" data-knr-carousel-track>
+      {%- for article in blog.articles limit: articles_count -%}
+        {%- assign category = article.metafields.custom.category.value.label -%}
+        <article class="knr-latest-news__card">
+          <a href="{{ article.url }}" class="knr-latest-news__image-link" tabindex="-1" aria-hidden="true">
+            {%- if article.image -%}
+              {{
+                article.image
+                | image_url: width: 800
+                | image_tag:
+                  class: 'knr-latest-news__image',
+                  widths: '300, 450, 600, 800',
+                  sizes: '(min-width: 990px) 25vw, 255px',
+                  loading: 'lazy',
+                  alt: ''
+              }}
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: 'knr-latest-news__image knr-latest-news__image--placeholder' }}
+            {%- endif -%}
+          </a>
+
+          <div class="knr-latest-news__body">
+            {%- if category != blank -%}
+              <p class="knr-latest-news__eyebrow">{{ category }}</p>
+            {%- endif -%}
+            <h3 class="knr-latest-news__card-title">
+              <a href="{{ article.url }}" class="knr-latest-news__card-link">{{ article.title }}</a>
+            </h3>
+            {%- if article.excerpt_or_content != blank -%}
+              <p class="knr-latest-news__excerpt">
+                {{- article.excerpt_or_content | strip_html | truncatewords: 30 -}}
+              </p>
+            {%- endif -%}
+          </div>
+        </article>
+      {%- endfor -%}
+    </div>
+
+    <div class="knr-latest-news__progress">
+      {% render 'knr-carousel-progress' %}
+    </div>
+  </knr-carousel>
+
+  <script src="{{ 'knr-carousel.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% stylesheet %}
+  .knr-latest-news {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'title'
+      'list'
+      'progress'
+      'link';
+    margin-bottom: var(--knr-section-space-xl);
+  }
+
+  .knr-latest-news__title {
+    grid-area: title;
+    margin: 0 0 var(--knr-space-xl);
+    padding-inline: var(--knr-gutter);
+    font-size: var(--knr-fs-2xl);
+    font-weight: 400;
+    line-height: var(--knr-lh-2xl);
+  }
+
+  .knr-latest-news__link {
+    grid-area: link;
+    justify-self: center;
+    margin-top: var(--knr-space-xl);
+    border-bottom: 1px solid currentcolor;
+    color: inherit;
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+    text-decoration: none;
+  }
+
+  .knr-latest-news__link:focus-visible,
+  .knr-latest-news__card-link:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-latest-news__list {
+    grid-area: list;
+    display: flex;
+    gap: var(--knr-space-xs);
+    padding-inline: var(--knr-gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--knr-gutter);
+    scrollbar-width: none;
+  }
+
+  .knr-latest-news__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .knr-latest-news__card {
+    flex: 0 0 15.9375rem;
+    scroll-snap-align: start;
+  }
+
+  .knr-latest-news__progress {
+    grid-area: progress;
+    margin-top: var(--knr-space-xl);
+  }
+
+  .knr-latest-news__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .knr-latest-news__image--placeholder {
+    background-color: var(--knr-color-surface);
+  }
+
+  .knr-latest-news__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--knr-space-md);
+    padding-top: var(--knr-space-lg);
+  }
+
+  .knr-latest-news__eyebrow {
+    margin: 0;
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+  }
+
+  .knr-latest-news__eyebrow::after {
+    content: '';
+    display: block;
+    width: 1rem;
+    height: 1px;
+    margin-top: var(--knr-space-xs);
+    background-color: var(--knr-color-accent);
+  }
+
+  .knr-latest-news__card-title {
+    margin: 0;
+    font-size: var(--knr-fs-xl);
+    font-weight: 400;
+    line-height: var(--knr-lh-xl);
+  }
+
+  .knr-latest-news__card-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .knr-latest-news__card-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .knr-latest-news__excerpt {
+    margin: 0;
+    font-size: var(--knr-fs-sm);
+    line-height: var(--knr-lh-lg);
+  }
+
+  @media (min-width: 990px) {
+    .knr-latest-news {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'title link'
+        'list list';
+      align-items: end;
+    }
+
+    .knr-latest-news__link {
+      align-self: center;
+      justify-self: end;
+      margin: 0 var(--knr-gutter) var(--knr-space-xl) 0;
+    }
+
+    .knr-latest-news__list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      row-gap: var(--knr-space-xl);
+      overflow: visible;
+    }
+
+    .knr-latest-news__body {
+      padding-top: var(--knr-space-md);
+    }
+
+    .knr-latest-news__progress {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Latest news",
+  "class": "knr-latest-news-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Latest news"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog"
+    },
+    {
+      "type": "range",
+      "id": "articles_count",
+      "label": "Number of articles",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Blog link label",
+      "default": "Voir tous les articles"
+    },
+    {
+      "type": "paragraph",
+      "content": "Article category (above the title): article metafield custom.category (Blog category metaobject, label field)."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Latest news"
+    }
+  ]
+}
+{% endschema %}

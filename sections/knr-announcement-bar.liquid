@@ -1,0 +1,75 @@
+{%- if section.settings.text != blank -%}
+  <div
+    class="knr-announcement-bar full-width"
+    role="region"
+    aria-label="{{ 'knr.header.announcement' | t | escape }}"
+    style="--knr-announcement-bg: {{ section.settings.background_color }}; --knr-announcement-fg: {{ section.settings.text_color }};"
+  >
+    <div class="knr-announcement-bar__text">
+      {{ section.settings.text }}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .knr-announcement-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2rem;
+    padding: var(--knr-space-2xs) var(--knr-gutter);
+    background-color: var(--knr-announcement-bg);
+    color: var(--knr-announcement-fg);
+    font-size: var(--knr-fs-xs);
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .knr-announcement-bar__text a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .knr-announcement-bar__text a:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "class": "knr-announcement-bar-section",
+  "enabled_on": {
+    "groups": [
+      "header"
+    ]
+  },
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#FFFFFF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar"
+    }
+  ]
+}
+{% endschema %}

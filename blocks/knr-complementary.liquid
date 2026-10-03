@@ -1,0 +1,125 @@
+{% doc %}
+  @example
+  {% content_for 'block', type: 'knr-complementary', id: 'complementary' %}
+{% enddoc %}
+
+{%- assign complementary_products = product.metafields.custom.complementary_products.value -%}
+
+{%- if complementary_products.count > 0 -%}
+  <knr-carousel class="knr-complementary" {{ block.shopify_attributes }}>
+    <div class="knr-complementary__header">
+      <h2 class="knr-complementary__title">{{ block.settings.title }}</h2>
+      <button
+        type="button"
+        class="knr-complementary__next"
+        data-knr-carousel-next
+        aria-label="{{ 'knr.carousel.next' | t }}"
+      ></button>
+    </div>
+
+    <ul class="knr-complementary__list" role="list" data-knr-carousel-track>
+      {%- for complementary_product in complementary_products -%}
+        <li class="knr-complementary__item">
+          {% render 'knr-product-card',
+            card_product: complementary_product,
+            sizes: '(min-width: 990px) 150px, 40vw'
+          %}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </knr-carousel>
+
+  <script src="{{ 'knr-carousel.js' | asset_url }}" defer></script>
+  <script src="{{ 'knr-cart-form.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% stylesheet %}
+  .knr-complementary {
+    display: block;
+    margin-top: var(--knr-space-xl);
+  }
+
+  .knr-complementary__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--knr-space-md);
+  }
+
+  .knr-complementary__title {
+    margin: 0;
+    font-size: var(--knr-fs-xs);
+    font-weight: 400;
+    line-height: var(--knr-lh-md);
+    text-transform: uppercase;
+  }
+
+  .knr-complementary__next {
+    display: grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--knr-color-text);
+    cursor: pointer;
+  }
+
+  .knr-complementary__next::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-left: -3px;
+    border-top: 1px solid currentcolor;
+    border-right: 1px solid currentcolor;
+    transform: rotate(45deg);
+  }
+
+  .knr-complementary__next[hidden] {
+    display: none;
+  }
+
+  .knr-complementary__next:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-complementary__list {
+    display: flex;
+    gap: var(--knr-space-xs);
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    list-style: none;
+  }
+
+  .knr-complementary__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .knr-complementary__item {
+    flex: 0 0 38%;
+    scroll-snap-align: start;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Complete the routine",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Complétez votre rituel"
+    },
+    {
+      "type": "paragraph",
+      "content": "Products picked in the product's custom.complementary_products metafield."
+    }
+  ]
+}
+{% endschema %}

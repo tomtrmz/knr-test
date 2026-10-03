@@ -1,0 +1,92 @@
+{%- if block.settings.quote != blank -%}
+  <figure
+    class="knr-before-after-review"
+    role="group"
+    aria-roledescription="{{ 'knr.before_after.slide' | t | escape }}"
+    data-knr-testimonials-slide
+    {{ block.shopify_attributes }}
+  >
+    <figcaption class="knr-before-after-review__meta">
+      {%- if block.settings.rating > 0 -%}
+        {% render 'knr-rating-stars', rating: block.settings.rating %}
+      {%- endif -%}
+      {%- if block.settings.author != blank -%}
+        <span>{{ block.settings.author }}</span>
+      {%- endif -%}
+    </figcaption>
+    <blockquote class="knr-before-after-review__quote">
+      <p>{{ block.settings.quote | newline_to_br }}</p>
+    </blockquote>
+  </figure>
+{%- endif -%}
+
+{% stylesheet %}
+  .knr-before-after-review[hidden] {
+    display: none;
+  }
+
+  .knr-before-after-review {
+    max-width: var(--knr-width-text);
+    margin: 0 auto;
+  }
+
+  .knr-before-after-review__meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--knr-space-2xs);
+    color: var(--knr-color-accent);
+    font-size: var(--knr-fs-2xs);
+    line-height: var(--knr-lh-2xs);
+  }
+
+  .knr-before-after-review__quote {
+    margin: var(--knr-space-xl) 0 0;
+    font-size: var(--knr-fs-xl);
+    line-height: var(--knr-lh-xl);
+  }
+
+  .knr-before-after-review__quote p {
+    margin: 0;
+  }
+
+  @media (min-width: 990px) {
+    .knr-before-after-review__quote {
+      font-size: var(--knr-fs-2xl);
+      line-height: var(--knr-lh-2xl);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Review",
+  "settings": [
+    {
+      "type": "range",
+      "id": "rating",
+      "label": "Rating",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "default": 5,
+      "info": "0 hides the stars"
+    },
+    {
+      "type": "text",
+      "id": "author",
+      "label": "Author"
+    },
+    {
+      "type": "textarea",
+      "id": "quote",
+      "label": "Quote"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Review"
+    }
+  ]
+}
+{% endschema %}

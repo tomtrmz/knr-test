@@ -1,0 +1,164 @@
+{%- liquid
+  case block.settings.content
+    when 'description'
+      assign accordion_content = product.description
+    when 'benefits'
+      assign accordion_content = product.metafields.custom.benefits | metafield_tag
+    when 'key_ingredients'
+      assign accordion_content = product.metafields.custom.key_ingredients | metafield_tag
+    when 'skin_types'
+      assign accordion_content = product.metafields.custom.skin_types | metafield_tag
+    else
+      assign accordion_content = ''
+  endcase
+-%}
+
+{%- capture nested_content -%}
+  {% content_for 'blocks' %}
+{%- endcapture -%}
+
+{%- if accordion_content != blank or nested_content != blank or request.design_mode -%}
+  <knr-disclosure class="knr-accordion__disclosure" {{ block.shopify_attributes }}>
+  <details
+    class="knr-accordion"
+    {% if block.settings.open %}
+      open
+    {% endif %}
+  >
+    <summary class="knr-accordion__title">{{ block.settings.title }}</summary>
+    <div class="knr-accordion__content" data-knr-disclosure-content>
+      {{- accordion_content -}}
+      {{- nested_content -}}
+    </div>
+  </details>
+  </knr-disclosure>
+{%- endif -%}
+
+{% stylesheet %}
+  .knr-accordion__disclosure {
+    display: block;
+  }
+
+  .knr-accordion {
+    border-top: 1px solid var(--knr-color-border);
+  }
+
+  .knr-accordion__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--knr-space-md);
+    padding-block: var(--knr-space-md);
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .knr-accordion__title::-webkit-details-marker {
+    display: none;
+  }
+
+  .knr-accordion__title::after {
+    content: '';
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    margin-top: -3px;
+    border-right: 1px solid currentcolor;
+    border-bottom: 1px solid currentcolor;
+    transform: rotate(45deg);
+    transition: transform var(--knr-transition);
+  }
+
+  .knr-accordion[open] > .knr-accordion__title::after {
+    margin-top: 3px;
+    transform: rotate(-135deg);
+  }
+
+  .knr-accordion__title:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-accordion__content {
+    padding-bottom: var(--knr-space-md);
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+  }
+
+  .knr-accordion__content p,
+  .knr-accordion__content ul,
+  .knr-accordion__content ol {
+    margin: 0 0 var(--knr-space-xs);
+  }
+
+  .knr-accordion__content ul,
+  .knr-accordion__content ol {
+    padding-inline-start: var(--knr-space-md);
+  }
+
+  .knr-accordion__content > :last-child,
+  .knr-accordion__content :is(p, ul, ol):last-child {
+    margin-bottom: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Accordion",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Description"
+    },
+    {
+      "type": "select",
+      "id": "content",
+      "label": "Content",
+      "options": [
+        {
+          "value": "description",
+          "label": "Product description"
+        },
+        {
+          "value": "benefits",
+          "label": "Benefits (custom.benefits)"
+        },
+        {
+          "value": "key_ingredients",
+          "label": "Key ingredients (custom.key_ingredients)"
+        },
+        {
+          "value": "skin_types",
+          "label": "Suitable skin types (custom.skin_types)"
+        },
+        {
+          "value": "none",
+          "label": "None (free text only)"
+        }
+      ],
+      "default": "description",
+      "info": "Free text blocks can be added inside the accordion."
+    },
+    {
+      "type": "checkbox",
+      "id": "open",
+      "label": "Open by default",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "_knr-accordion-text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Accordion"
+    }
+  ]
+}
+{% endschema %}

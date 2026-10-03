@@ -1,0 +1,29 @@
+{%- if block.settings.text != blank -%}
+  <div class="knr-accordion-text" {{ block.shopify_attributes }}>
+    {{ block.settings.text }}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .knr-accordion-text {
+    margin-top: var(--knr-space-xs);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Free text",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Free text"
+    }
+  ]
+}
+{% endschema %}

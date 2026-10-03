@@ -1,0 +1,17 @@
+{% doc %}
+  @param {variant} variant - The variant
+
+  @example
+  {% render 'knr-unit-price', variant: product.selected_or_first_available_variant %}
+{% enddoc %}
+
+{%- if variant.unit_price_measurement -%}
+  {%- liquid
+    assign unit_price = variant.unit_price | money
+    assign reference_unit = variant.unit_price_measurement.reference_unit
+    if variant.unit_price_measurement.reference_value != 1
+      assign reference_unit = variant.unit_price_measurement.reference_value | append: ' ' | append: reference_unit
+    endif
+  -%}
+  {{- 'knr.product.unit_price' | t: price: unit_price, unit: reference_unit -}}
+{%- endif -%}

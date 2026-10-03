@@ -1,0 +1,74 @@
+{% doc %}
+  @param {product} product - The current product
+  @param {boolean} [show_product] - Also show the product title as the last item
+
+  @example
+  {% render 'knr-breadcrumb', product: product, show_product: false %}
+{% enddoc %}
+
+{%- liquid
+  assign current_collection = collection
+  if current_collection == blank
+    assign current_collection = product.metafields.custom.primary_collection.value
+  endif
+  if current_collection == blank
+    assign current_collection = product.collections.first
+  endif
+
+  assign parent_collection = current_collection.metafields.custom.parent_collection.value
+-%}
+
+{%- if current_collection != blank -%}
+  <nav class="knr-breadcrumb" aria-label="{{ 'knr.product.breadcrumb' | t }}">
+    <ol class="knr-breadcrumb__list" role="list">
+      {%- if parent_collection != blank -%}
+        <li class="knr-breadcrumb__item">
+          <a href="{{ parent_collection.url }}" class="knr-breadcrumb__link">{{ parent_collection.title }}</a>
+        </li>
+      {%- endif -%}
+      <li class="knr-breadcrumb__item">
+        <a
+          href="{{ current_collection.url }}"
+          class="knr-breadcrumb__link"
+        >
+          {{- current_collection.title -}}
+        </a>
+      </li>
+      {%- if show_product -%}
+        <li class="knr-breadcrumb__item" aria-current="page">{{ product.title }}</li>
+      {%- endif -%}
+    </ol>
+  </nav>
+{%- endif -%}
+
+{% stylesheet %}
+  .knr-breadcrumb__list {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--knr-color-accent);
+    font-size: var(--knr-fs-2xs);
+    line-height: var(--knr-lh-xs);
+  }
+
+  .knr-breadcrumb__item + .knr-breadcrumb__item::before {
+    content: '/';
+    margin-inline: var(--knr-space-2xs);
+  }
+
+  .knr-breadcrumb__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .knr-breadcrumb__link:hover {
+    text-decoration: underline;
+  }
+
+  .knr-breadcrumb__link:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+{% endstylesheet %}

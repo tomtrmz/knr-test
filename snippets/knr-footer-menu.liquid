@@ -1,0 +1,134 @@
+{% doc %}
+  @param {object} link - A top-level link of the footer menu, with nested links
+
+  @example
+  {% for link in section.settings.menu.links %}{% render 'knr-footer-menu', link: link %}{% endfor %}
+{% enddoc %}
+
+{%- capture links -%}
+  <ul class="knr-footer-menu__list">
+    {%- for child in link.links -%}
+      <li>
+        <a
+          href="{{ child.url }}"
+          class="knr-footer-menu__link"
+          {% if child.current %}
+            aria-current="page"
+          {% endif %}
+        >
+          {{- child.title -}}
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
+{%- endcapture -%}
+
+<nav class="knr-footer-menu" aria-label="{{ link.title | escape }}">
+  <div class="knr-footer-menu__desktop">
+    <h2 class="knr-footer-menu__title">{{ link.title }}</h2>
+    {{ links }}
+  </div>
+
+  <knr-disclosure class="knr-footer-menu__mobile">
+    <details class="knr-footer-menu__details">
+      <summary class="knr-footer-menu__summary">
+        {{ link.title }}
+        <span class="knr-footer-menu__chevron">{% render 'knr-icon', name: 'chevron-down' %}</span>
+      </summary>
+      <div class="knr-footer-menu__content" data-knr-disclosure-content>
+        {{ links }}
+      </div>
+    </details>
+  </knr-disclosure>
+</nav>
+
+{% stylesheet %}
+  .knr-footer-menu__title {
+    margin: 0;
+    font-size: inherit;
+    font-weight: 400;
+  }
+
+  .knr-footer-menu__list {
+    display: grid;
+    gap: var(--knr-space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .knr-footer-menu__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .knr-footer-menu__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .knr-footer-menu__link:focus-visible,
+  .knr-footer-menu__summary:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-footer-menu__desktop {
+    display: none;
+  }
+
+  .knr-footer-menu__mobile {
+    display: block;
+  }
+
+  .knr-footer-menu__details {
+    border-bottom: 1px solid var(--knr-color-sand);
+  }
+
+  .knr-footer-menu__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: var(--knr-space-md);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .knr-footer-menu__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .knr-footer-menu__chevron {
+    display: grid;
+    place-items: center;
+    width: 1rem;
+    height: 1.25rem;
+    transition: rotate var(--knr-transition);
+  }
+
+  .knr-footer-menu__details[open] .knr-footer-menu__chevron {
+    rotate: 180deg;
+  }
+
+  .knr-footer-menu__content {
+    padding-bottom: var(--knr-space-md);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .knr-footer-menu__chevron {
+      transition: none;
+    }
+  }
+
+  @media (min-width: 990px) {
+    .knr-footer-menu__desktop {
+      display: grid;
+      gap: var(--knr-space-lg);
+      align-content: start;
+    }
+
+    .knr-footer-menu__mobile {
+      display: none;
+    }
+  }
+{% endstylesheet %}

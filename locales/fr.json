@@ -1,0 +1,162 @@
+{
+  "404": {
+    "title": "404",
+    "not_found": "Page introuvable.",
+    "back_to_shopping": "Continuer vos achats"
+  },
+  "blog": {
+    "article_comments": "Commentaires",
+    "article_metadata_html": "{{ date }} par {{ author }}",
+    "comment_form_body": "Commentaire",
+    "comment_form_email": "E-mail",
+    "comment_form_name": "Nom",
+    "comment_form_submit": "Publier",
+    "comment_form_title": "Ajouter un commentaire"
+  },
+  "cart": {
+    "checkout": "Paiement",
+    "title": "Panier",
+    "update": "Mettre à jour",
+    "remove": "Supprimer"
+  },
+  "customers": {
+    "login": {
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "title": "Connexion"
+    }
+  },
+  "collections": {
+    "title": "Collections"
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Ajouter à Apple Wallet",
+    "card": "Carte-cadeau",
+    "expired": "Cette carte-cadeau a expiré",
+    "expires_on": "Expire le {{ expires_on }}",
+    "use_at_checkout": "Utilisez cette carte-cadeau lors du paiement"
+  },
+  "password": {
+    "title": "Cette boutique est privée",
+    "password": "Mot de passe",
+    "enter": "Entrer"
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher des articles, pages ou produits",
+    "submit": "Rechercher",
+    "no_results_html": "Aucun résultat pour {{ terms }}",
+    "results_for_html": "{{ count }} résultats pour {{ terms }}"
+  },
+  "knr": {
+    "header": {
+      "main_navigation": "Navigation principale",
+      "store_locator": "Trouver un point de vente",
+      "account": "Compte",
+      "search": "Rechercher",
+      "cart": "Panier",
+      "cart_items": {
+        "one": "{{ count }} article",
+        "other": "{{ count }} articles"
+      },
+      "open_menu": "Ouvrir le menu",
+      "close_menu": "Fermer le menu",
+      "announcement": "Annonce"
+    },
+    "product": {
+      "gallery": "Images du produit",
+      "breadcrumb": "Fil d'Ariane",
+      "rating_label": "Note : {{ rating }} sur {{ max }}",
+      "reviews_count": {
+        "one": "{{ count }} avis",
+        "other": "{{ count }} avis"
+      },
+      "unit_price": "{{ price }} par {{ unit }}",
+      "add_to_cart": "Ajouter au panier",
+      "sold_out": "Épuisé",
+      "variant": "Variante",
+      "in_stock": "En stock.",
+      "in_stock_delivery": "En stock, livraison estimée {{ date }}.",
+      "out_of_stock": "Actuellement indisponible.",
+      "zoom_open": "Agrandir l'image {{ index }} sur {{ count }}",
+      "zoom_label": "Images du produit",
+      "zoom_close": "Fermer",
+      "gallery_previous": "Image précédente",
+      "gallery_next": "Image suivante"
+    },
+    "cart": {
+      "added": "Ajouté au panier !",
+      "error": "Une erreur est survenue. Veuillez réessayer."
+    },
+    "reassurance": {
+      "go_to": "Afficher le message {{ index }}",
+      "label": "Nos engagements"
+    },
+    "carousel": {
+      "next": "Produits suivants"
+    },
+    "product_card": {
+      "add": "Ajouter {{ title }} au panier",
+      "choose_options": "Choisir une option pour {{ title }}",
+      "sold_out": "{{ title }} est épuisé"
+    },
+    "sticky_atc": {
+      "quantity": "Quantité"
+    },
+    "read_more": {
+      "more": "Lire plus",
+      "less": "Lire moins"
+    },
+    "before_after": {
+      "label": "Avis clientes",
+      "carousel": "carrousel",
+      "slide": "avis",
+      "slide_position": "{{ index }} sur {{ count }}",
+      "previous": "Avis précédent",
+      "next": "Avis suivant",
+      "compare": "Comparaison avant / après"
+    },
+    "newsletter": {
+      "email_label": "E-mail",
+      "submit": "S'inscrire",
+      "success": "Merci pour votre inscription !",
+      "title_with_product": "{{ product }} — {{ title }}"
+    },
+    "footer": {
+      "copyright": "© {{ year }} {{ shop }}. Tous droits réservés.",
+      "country_label": "Pays / région",
+      "language_label": "Langue",
+      "update": "Mettre à jour",
+      "social": {
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "linkedin": "LinkedIn"
+      }
+    },
+    "reviews": {
+      "average": "{{ rating }} sur {{ max }}",
+      "based_on": {
+        "one": "Basé sur {{ count }} avis",
+        "other": "Basé sur {{ count }} avis"
+      },
+      "verified": "Vérifié",
+      "filter": "Filtrer",
+      "filter_legend": "Note",
+      "filter_option": {
+        "one": "{{ count }} étoile",
+        "other": "{{ count }} étoiles"
+      },
+      "histogram_label": "Répartition des notes",
+      "histogram_row": {
+        "one": "{{ stars }} : {{ count }} avis",
+        "other": "{{ stars }} : {{ count }} avis"
+      },
+      "load_more": "Charger plus",
+      "no_results": "Aucun avis ne correspond à ce filtre.",
+      "write": "Écrire un avis",
+      "ask": "Poser une question"
+    }
+  }
+}

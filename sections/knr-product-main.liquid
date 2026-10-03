@@ -1,0 +1,596 @@
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+
+  assign rating_value = blank
+  assign rating_max = 5
+  assign rating_count = blank
+  assign reviews = product.metafields.custom.reviews.value
+  if reviews.size > 0
+    capture review_stats
+      render 'knr-review-stats', reviews: reviews
+    endcapture
+    assign review_stats = review_stats | split: '|'
+    assign stats_count = review_stats[0] | plus: 0
+    if stats_count > 0
+      assign rating_count = stats_count
+      assign rating_value = review_stats[1] | times: 1.0 | divided_by: stats_count
+    endif
+  endif
+  if rating_value == blank and product.metafields.reviews.rating.value != blank
+    assign rating_value = product.metafields.reviews.rating.value.rating
+    assign rating_max = product.metafields.reviews.rating.value.scale_max
+    assign rating_count = product.metafields.reviews.rating_count.value
+  endif
+
+  assign yuka_score = product.metafields.custom.yuka_score.value
+  assign inci_score = product.metafields.custom.inci_score.value
+  if inci_score != blank
+    assign inci_score_floor = inci_score | floor
+    if inci_score == inci_score_floor
+      assign inci_score = inci_score_floor
+    endif
+  endif
+-%}
+
+{%- capture labels_html -%}
+  {%- render 'knr-labels', product: product -%}
+{%- endcapture -%}
+
+<knr-product-main
+  class="knr-product-main full-width"
+  style="--knr-product-main-bg-mobile: {{ section.settings.mobile_background }};"
+>
+  {% render 'knr-product-gallery', product: product, labels: labels_html %}
+
+  <div class="knr-product-main__panel">
+    <div class="knr-product-main__info">
+      {%- if section.settings.show_breadcrumb -%}
+        <div class="knr-product-main__breadcrumb">
+          {% render 'knr-breadcrumb', product: product, show_product: section.settings.breadcrumb_show_product %}
+        </div>
+      {%- endif -%}
+
+      {%- if labels_html != blank -%}
+        <div class="knr-product-main__labels">{{ labels_html }}</div>
+      {%- endif -%}
+
+      <h1 class="knr-product-main__title">{{ product.title }}</h1>
+
+      {%- if rating_value != blank -%}
+        <a href="#knr-reviews" class="knr-product-main__rating">
+          {% render 'knr-rating-stars', rating: rating_value, scale_max: rating_max %}
+          <span class="knr-product-main__rating-value">{{ rating_value | round: 1 }}</span>
+          {%- if rating_count != blank -%}
+            <span class="knr-product-main__rating-count">
+              {{- 'knr.product.reviews_count' | t: count: rating_count -}}
+            </span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+
+      <div class="knr-product-main__price" aria-live="polite">
+        {% render 'knr-price', variant: variant %}
+      </div>
+
+      {%- if yuka_score != blank or inci_score != blank -%}
+        <ul class="knr-product-main__scores" role="list">
+          {%- if yuka_score != blank -%}
+            <li class="knr-product-main__score">
+              <span class="knr-product-main__score-label">{{ section.settings.yuka_label }}</span>
+              {{ yuka_score }}/{{ section.settings.yuka_scale }}
+            </li>
+          {%- endif -%}
+          {%- if inci_score != blank -%}
+            <li class="knr-product-main__score">
+              <span class="knr-product-main__score-label">{{ section.settings.inci_label }}</span>
+              {{ inci_score }}/{{ section.settings.inci_scale }}
+            </li>
+          {%- endif -%}
+        </ul>
+      {%- endif -%}
+
+      {%- assign short_description = product.metafields.custom.short_description.value -%}
+      {%- if short_description != blank -%}
+        <p class="knr-product-main__short-description">{{ short_description | newline_to_br }}</p>
+      {%- endif -%}
+
+      {%- unless product.has_only_default_variant -%}
+        <div class="knr-product-main__variants">
+          {% render 'knr-variant-picker', product: product, id_prefix: section.id %}
+        </div>
+      {%- endunless -%}
+
+      <div class="knr-product-main__buy">
+        <knr-cart-form
+          data-error-message="{{ 'knr.cart.error' | t | escape }}"
+          data-added-label="{{ 'knr.cart.added' | t | escape }}"
+        >
+          {%- form 'product', product, class: 'knr-product-main__form' -%}
+            <input type="hidden" name="id" value="{{ variant.id }}" disabled data-knr-variant-id>
+
+            <noscript>
+              <label class="knr-product-main__noscript-label" for="{{ section.id }}-variant-select">
+                {{- 'knr.product.variant' | t -}}
+              </label>
+              <select id="{{ section.id }}-variant-select" name="id" class="knr-product-main__noscript-select">
+                {%- for product_variant in product.variants -%}
+                  <option
+                    value="{{ product_variant.id }}"
+                    {% if product_variant == variant %}
+                      selected
+                    {% endif %}
+                    {% unless product_variant.available %}
+                      disabled
+                    {% endunless %}
+                  >
+                    {{ product_variant.title }} - {{ product_variant.price | money }}
+                  </option>
+                {%- endfor -%}
+              </select>
+            </noscript>
+
+            <button
+              type="submit"
+              name="add"
+              class="knr-product-main__add-button"
+              data-knr-add-button
+              data-label-add="{{ 'knr.product.add_to_cart' | t | escape }}"
+              data-label-sold-out="{{ 'knr.product.sold_out' | t | escape }}"
+              {% unless variant.available %}
+                disabled
+              {% endunless %}
+            >
+              <span class="knr-product-main__add-label" data-knr-add-label aria-live="polite">
+                {%- if variant.available -%}
+                  {{- 'knr.product.add_to_cart' | t -}}
+                {%- else -%}
+                  {{- 'knr.product.sold_out' | t -}}
+                {%- endif -%}
+              </span>
+            </button>
+
+            <p class="knr-product-main__form-error" role="alert" data-knr-cart-error hidden></p>
+          {%- endform -%}
+        </knr-cart-form>
+      </div>
+
+      <div class="knr-product-main__reassurance">
+        {% content_for 'block', type: 'knr-reassurance', id: 'reassurance' %}
+      </div>
+    </div>
+
+    {% content_for 'block', type: 'knr-accordions', id: 'accordions' %}
+    {% content_for 'block', type: 'knr-complementary', id: 'complementary' %}
+  </div>
+
+  <script type="application/json" data-knr-variants>
+    [
+      {%- for product_variant in product.variants -%}
+        {%- capture variant_unit_price -%}
+          {%- render 'knr-unit-price', variant: product_variant -%}
+        {%- endcapture -%}
+        {
+          "id": {{ product_variant.id }},
+          "options": {{ product_variant.options | json }},
+          "available": {{ product_variant.available | json }},
+          "price": {{ product_variant.price | money | json }},
+          "compareAtPrice": {% if product_variant.compare_at_price > product_variant.price %}{{ product_variant.compare_at_price | money | json }}{% else %}null{% endif %},
+          "unitPrice": {{ variant_unit_price | strip | json }},
+          "featuredMediaId": {{ product_variant.featured_media.id | json }}
+        }
+        {%- unless forloop.last -%},{%- endunless -%}
+      {%- endfor -%}
+    ]
+  </script>
+</knr-product-main>
+
+<script src="{{ 'knr-product.js' | asset_url }}" defer></script>
+<script src="{{ 'knr-cart-form.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+  .knr-product-main {
+    --knr-product-panel-overlap: 7.25rem;
+
+    display: block;
+    margin-bottom: var(--knr-section-space-m);
+
+    background-color: var(--knr-product-main-bg-mobile, transparent);
+  }
+
+  .knr-product-main__panel {
+    position: relative;
+    z-index: 1;
+
+    margin: calc(-1 * var(--knr-product-panel-overlap)) var(--knr-space-md) var(--knr-space-xl);
+    padding: 1.5rem 1rem;
+    background-color: var(--knr-color-bg);
+  }
+
+  .knr-product-main__info {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'title price'
+      'rating rating'
+      'scores scores'
+      'description description'
+      'variants variants'
+      'buy buy'
+      'reassurance reassurance';
+    column-gap: var(--knr-space-md);
+    row-gap: var(--knr-space-md);
+    align-items: start;
+  }
+
+  .knr-product-main__breadcrumb,
+  .knr-product-main__labels {
+    display: none;
+  }
+
+  .knr-product-main__title {
+    grid-area: title;
+    margin: 0;
+    font-size: var(--knr-fs-sm);
+    font-weight: 400;
+    line-height: var(--knr-lh-tight);
+    text-transform: uppercase;
+  }
+
+  .knr-product-main__rating {
+    grid-area: rating;
+    display: flex;
+    align-items: center;
+    gap: var(--knr-space-2xs);
+    color: var(--knr-color-accent-light);
+    font-size: var(--knr-fs-2xs);
+    text-decoration: none;
+  }
+
+  .knr-product-main__rating:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-product-main__rating-count::before {
+    content: '•';
+    margin-inline-end: var(--knr-space-2xs);
+  }
+
+  .knr-product-main__price {
+    grid-area: price;
+    text-align: end;
+  }
+
+  .knr-product-main__price .knr-price__main {
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+
+  .knr-product-main__price .knr-price__current {
+    font-size: var(--knr-fs-sm);
+    line-height: var(--knr-lh-lg);
+  }
+
+  .knr-product-main__price .knr-price__compare {
+    color: var(--knr-color-text);
+    font-size: var(--knr-fs-2xs);
+    line-height: var(--knr-lh-2xs);
+  }
+
+  .knr-product-main__price .knr-price__unit {
+    font-size: var(--knr-fs-3xs);
+    line-height: var(--knr-lh-sm);
+  }
+
+  .knr-product-main__scores {
+    grid-area: scores;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--knr-space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--knr-fs-xs);
+  }
+
+  .knr-product-main__score {
+    display: flex;
+    align-items: center;
+    gap: var(--knr-space-xs);
+  }
+
+  .knr-product-main__score + .knr-product-main__score::before {
+    content: '';
+    width: 2px;
+    height: 2px;
+    background-color: currentcolor;
+  }
+
+  .knr-product-main__score-label {
+    font-weight: 400;
+  }
+
+  .knr-product-main__variants {
+    grid-area: variants;
+  }
+
+  .knr-product-main__buy {
+    grid-area: buy;
+  }
+
+  .knr-product-main__reassurance {
+    grid-area: reassurance;
+  }
+
+  .knr-product-main__add-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: var(--knr-control-height);
+    padding: var(--knr-space-xs) var(--knr-space-lg);
+    border: 1px solid var(--knr-color-text);
+    border-radius: var(--knr-radius);
+    background-color: var(--knr-color-text);
+    color: var(--knr-color-bg);
+    font: inherit;
+    font-size: var(--knr-fs-xs);
+    cursor: pointer;
+    transition: opacity var(--knr-transition);
+  }
+
+  .knr-product-main__add-button:hover {
+    opacity: 0.85;
+  }
+
+  .knr-product-main__add-button:focus-visible {
+    outline: 1px solid var(--knr-color-text);
+    outline-offset: 2px;
+  }
+
+  .knr-product-main__add-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .knr-product-main__add-button[aria-busy='true'] {
+    cursor: progress;
+  }
+
+  .knr-product-main__add-button[aria-busy='true'] .knr-product-main__add-label {
+    visibility: hidden;
+  }
+
+  .knr-product-main__add-button[aria-busy='true']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 1rem;
+    height: 1rem;
+    margin: auto;
+    border: 1.5px solid currentcolor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: knr-product-main-spin 700ms linear infinite;
+  }
+
+  @keyframes knr-product-main-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .knr-product-main__add-button[aria-busy='true']::after {
+      animation-duration: 2s;
+    }
+  }
+
+  .knr-product-main__form-error {
+    margin-top: var(--knr-space-xs);
+    color: var(--knr-color-error);
+    font-size: var(--knr-fs-xs);
+  }
+
+  .knr-product-main__form-error[hidden] {
+    display: none;
+  }
+
+  .knr-product-main__noscript-label {
+    display: block;
+    margin-bottom: var(--knr-space-2xs);
+    font-size: var(--knr-fs-xs);
+  }
+
+  .knr-product-main__noscript-select {
+    width: 100%;
+    margin-bottom: var(--knr-space-sm);
+    padding: var(--knr-space-xs);
+  }
+
+  .knr-product-main__short-description {
+    grid-area: description;
+    margin: 0;
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-md);
+  }
+
+  @media (min-width: 990px) {
+    .knr-product-main {
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr)
+        var(--knr-product-panel-width)
+        var(--knr-gutter);
+      --knr-product-panel-width: 28.5rem;
+      --knr-gallery-gap: 1rem;
+    }
+
+    .knr-product-main__panel {
+      position: sticky;
+      z-index: 1;
+      top: var(--knr-space-md);
+      grid-column: 3;
+      grid-row: 1;
+      align-self: start;
+      margin: calc(var(--knr-header-height) + var(--knr-space-xl)) 0 0;
+      padding: var(--knr-space-xl);
+    }
+
+    .knr-product-main__info {
+      grid-template-areas:
+        'breadcrumb breadcrumb'
+        'labels labels'
+        'title rating'
+        'scores scores'
+        'description description'
+        'variants variants'
+        'price price'
+        'buy buy'
+        'reassurance reassurance';
+      row-gap: var(--knr-space-lg);
+    }
+
+    .knr-product-main__breadcrumb {
+      display: block;
+      grid-area: breadcrumb;
+    }
+
+    .knr-product-main__labels {
+      display: block;
+      grid-area: labels;
+    }
+
+    .knr-product-main__title {
+      font-size: var(--knr-fs-xl);
+      line-height: var(--knr-lh-xl);
+    }
+
+    .knr-product-main__score-label {
+      font-weight: 700;
+    }
+
+    .knr-product-main__rating {
+      display: grid;
+      grid-template-columns: auto auto;
+      justify-items: end;
+      column-gap: var(--knr-space-2xs);
+    }
+
+    .knr-product-main__rating-count {
+      grid-column: 1 / -1;
+    }
+
+    .knr-product-main__rating-count::before {
+      content: none;
+    }
+
+    .knr-product-main__price {
+      text-align: start;
+    }
+
+    .knr-product-main__price .knr-price__main {
+      justify-content: flex-start;
+    }
+
+    .knr-product-main__price .knr-price__current {
+      font-size: var(--knr-fs-xl);
+      line-height: var(--knr-lh-xl);
+    }
+
+    .knr-product-main__price .knr-price__compare {
+      color: var(--knr-color-muted);
+      font-size: var(--knr-fs-xs);
+      line-height: var(--knr-lh-md);
+    }
+
+    .knr-product-main__price .knr-price__unit {
+      font-size: var(--knr-fs-2xs);
+      line-height: normal;
+    }
+
+    .knr-product-main {
+      background-color: transparent;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Main product",
+  "class": "knr-product-main-section",
+  "enabled_on": {
+    "templates": [
+      "product"
+    ]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Breadcrumb"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "breadcrumb_show_product",
+      "label": "Show product title in breadcrumb",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Scores",
+      "info": "Values read from the custom.yuka_score and custom.inci_score metafields"
+    },
+    {
+      "type": "text",
+      "id": "yuka_label",
+      "label": "Yuka score label",
+      "default": "Yuka"
+    },
+    {
+      "type": "text",
+      "id": "yuka_scale",
+      "label": "Yuka score scale",
+      "default": "100"
+    },
+    {
+      "type": "text",
+      "id": "inci_label",
+      "label": "INCI Beauty score label",
+      "default": "INCI Beauty"
+    },
+    {
+      "type": "text",
+      "id": "inci_scale",
+      "label": "INCI Beauty score scale",
+      "default": "20"
+    },
+    {
+      "type": "color",
+      "id": "mobile_background",
+      "label": "Background color (mobile)",
+      "info": "Around and under the info card on mobile: use the background color of the first image.",
+      "default": "#E2DDD2"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "knr-reassurance"
+    },
+    {
+      "type": "knr-accordions"
+    },
+    {
+      "type": "knr-complementary"
+    }
+  ]
+}
+{% endschema %}

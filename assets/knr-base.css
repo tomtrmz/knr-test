@@ -1,0 +1,65 @@
+:root {
+  --knr-color-text: #000000;
+  --knr-color-bg: #ffffff;
+  --knr-color-muted: rgb(0 0 0 / 24%);
+  --knr-color-border: var(--knr-color-muted);
+  --knr-color-surface: #f9f8f5;
+  --knr-color-accent: #b5a282;
+  --knr-color-accent-light: #e2d3bb;
+  --knr-color-sand: #dcd5c3;
+  --knr-color-error: #b3261e;
+
+  --knr-fs-3xs: 0.5rem;
+  --knr-fs-2xs: 0.625rem;
+  --knr-fs-xs: 0.75rem;
+  --knr-fs-sm: 0.875rem;
+  --knr-fs-lg: 1.25rem;
+  --knr-fs-xl: 1.5rem;
+  --knr-fs-2xl: 2rem;
+  --knr-fs-3xl: 2.5rem;
+
+  --knr-lh-tight: 1.2;
+  --knr-lh-2xs: 0.75rem;
+  --knr-lh-xs: 0.875rem;
+  --knr-lh-sm: 1rem;
+  --knr-lh-md: 1.25rem;
+  --knr-lh-lg: 1.375rem;
+  --knr-lh-xl: 2rem;
+  --knr-lh-2xl: 2.5rem;
+  --knr-lh-3xl: 3rem;
+
+  --knr-space-2xs: 0.25rem;
+  --knr-space-xs: 0.5rem;
+  --knr-space-sm: 0.75rem;
+  --knr-space-md: 1rem;
+  --knr-space-lg: 1.5rem;
+  --knr-space-xl: 2.5rem;
+  --knr-space-2xl: 4rem;
+  --knr-space-3xl: 5rem;
+  --knr-space-4xl: 7.5rem;
+
+  --knr-section-space-s: var(--knr-space-xl);
+  --knr-section-space-m: 0rem;
+  --knr-section-space-l: var(--knr-space-xl);
+  --knr-section-space-xl: var(--knr-space-2xl);
+  --knr-section-space-2xl: var(--knr-space-4xl);
+
+  --knr-gutter: 1.5rem;
+  --knr-header-gutter: 1.5rem;
+  --knr-header-height: 3.5rem;
+  --knr-icon-size: 1rem;
+  --knr-width-text: 60.625rem;
+  --knr-width-narrow: 45rem;
+  --knr-control-height: 3rem;
+  --knr-radius: 2px;
+  --knr-transition: 200ms ease;
+}
+
+@media (min-width: 990px) {
+  :root {
+    --knr-gutter: 2.5rem;
+    --knr-section-space-m: var(--knr-space-3xl);
+    --knr-section-space-l: var(--knr-space-4xl);
+    --knr-section-space-xl: var(--knr-space-4xl);
+  }
+}

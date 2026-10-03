@@ -1,0 +1,62 @@
+{% doc %}
+  @param {number} rating - The rating value, e.g. 4.7
+  @param {number} [scale_max] - The maximum of the scale, 5 by default
+
+  @example
+  {% render 'knr-rating-stars', rating: 4.7 %}
+{% enddoc %}
+
+{%- liquid
+  assign max = scale_max | default: 5
+  assign percent = rating | times: 100.0 | divided_by: max
+  assign rating_rounded = rating | round: 1
+  assign rating_label = 'knr.product.rating_label' | t: rating: rating_rounded, max: max
+-%}
+
+{%- capture star_path -%}
+  M4.35422 0.411839C4.46946 0.178369 4.52708 0.0616344 4.6053 0.0243376C4.67336 -0.00811253 4.75243 -0.00811253 4.82049 0.0243376C4.89872 0.0616344 4.95634 0.178369 5.07158 0.411839L6.16492 2.62682C6.19894 2.69575 6.21595 2.73021 6.24081 2.75697C6.26283 2.78066 6.28923 2.79986 6.31855 2.81349C6.35167 2.82889 6.3897 2.83445 6.46575 2.84557L8.91139 3.20303C9.16892 3.24068 9.29769 3.2595 9.35728 3.3224C9.40913 3.37713 9.43351 3.45233 9.42364 3.52707C9.4123 3.61297 9.31908 3.70377 9.13263 3.88537L7.36361 5.60839C7.30847 5.6621 7.2809 5.68896 7.2631 5.72091C7.24735 5.7492 7.23725 5.78029 7.23335 5.81243C7.22894 5.84874 7.23545 5.88668 7.24846 5.96255L7.66587 8.39624C7.7099 8.65293 7.73191 8.78127 7.69054 8.85743C7.65455 8.92369 7.59057 8.97017 7.51642 8.98392C7.4312 8.99971 7.31595 8.93911 7.08545 8.81789L4.89908 7.6681C4.83096 7.63227 4.7969 7.61436 4.76101 7.60732C4.72924 7.60109 4.69656 7.60109 4.66479 7.60732C4.6289 7.61436 4.59484 7.63227 4.52672 7.6681L2.34035 8.81789C2.10985 8.93911 1.9946 8.99971 1.90938 8.98392C1.83523 8.97017 1.77125 8.92369 1.73526 8.85743C1.69389 8.78127 1.7159 8.65292 1.75993 8.39624L2.17733 5.96255C2.19035 5.88668 2.19685 5.84874 2.19245 5.81243C2.18855 5.78029 2.17845 5.7492 2.16269 5.72091C2.1449 5.68896 2.11733 5.6621 2.06218 5.60839L0.29317 3.88537C0.106722 3.70377 0.013498 3.61297 0.00215377 3.52707C-0.00771631 3.45233 0.0166674 3.37713 0.068516 3.3224C0.128108 3.2595 0.256876 3.24068 0.514412 3.20303L2.96005 2.84557C3.0361 2.83445 3.07413 2.82889 3.10725 2.81349C3.13657 2.79986 3.16297 2.78066 3.18498 2.75697C3.20984 2.73021 3.22686 2.69575 3.26088 2.62682L4.35422 0.411839Z
+{%- endcapture -%}
+
+<span class="knr-rating-stars" role="img" aria-label="{{ rating_label }}" style="--knr-rating-percent: {{ percent }}%;">
+  <span class="knr-rating-stars__row" aria-hidden="true">
+    {%- for i in (1..5) -%}
+      <svg class="knr-rating-stars__star" viewBox="0 0 12 12" fill="none" stroke="currentColor" focusable="false">
+        <path transform="translate(1.29 1.5)" d="{{ star_path }}" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    {%- endfor -%}
+  </span>
+  <span class="knr-rating-stars__row knr-rating-stars__row--filled" aria-hidden="true">
+    {%- for i in (1..5) -%}
+      <svg class="knr-rating-stars__star" viewBox="0 0 12 12" fill="currentColor" focusable="false">
+        <path transform="translate(1.29 1.5)" d="{{ star_path }}"/>
+      </svg>
+    {%- endfor -%}
+  </span>
+</span>
+
+{% stylesheet %}
+  .knr-rating-stars {
+    position: relative;
+    display: inline-flex;
+    vertical-align: middle;
+    color: var(--knr-color-accent);
+  }
+
+  .knr-rating-stars__row {
+    display: flex;
+  }
+
+  .knr-rating-stars__row--filled {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--knr-rating-percent);
+    overflow: hidden;
+  }
+
+  .knr-rating-stars__star {
+    display: block;
+    flex-shrink: 0;
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+{% endstylesheet %}

@@ -1,0 +1,234 @@
+{%- liquid
+  assign image = section.settings.image
+  assign image_mobile = section.settings.image_mobile | default: image
+
+  assign ratio_desktop = image.aspect_ratio | default: 2
+  assign ratio_mobile = section.settings.image_mobile.aspect_ratio
+-%}
+
+<section
+  class="knr-brand-statement full-width{% if ratio_mobile %} knr-brand-statement--mobile-image{% endif %}"
+  style="--knr-brand-statement-overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }}; --knr-brand-statement-ratio-desktop: {{ ratio_desktop }};{% if ratio_mobile %} --knr-brand-statement-ratio-mobile: {{ ratio_mobile }};{% endif %} --knr-brand-statement-max-height: {{ section.settings.max_height }}svh;"
+>
+  <div class="knr-brand-statement__media">
+    {%- if image -%}
+      <picture>
+        {%- if section.settings.image_mobile -%}
+          <source
+            media="(max-width: 989px)"
+            srcset="{{ image_mobile | image_url: width: 750 }} 750w, {{ image_mobile | image_url: width: 1100 }} 1100w"
+            sizes="100vw"
+          >
+        {%- endif -%}
+        {{
+          image
+          | image_url: width: 2880
+          | image_tag:
+            class: 'knr-brand-statement__image',
+            widths: '750, 1100, 1500, 1920, 2400, 2880',
+            sizes: '100vw',
+            loading: 'lazy',
+            alt: ''
+        }}
+      </picture>
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'knr-brand-statement__image knr-brand-statement__image--placeholder' }}
+    {%- endif -%}
+  </div>
+
+  <div class="knr-brand-statement__content">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="knr-brand-statement__eyebrow">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+
+    {%- if section.settings.quote != blank -%}
+      <figure class="knr-brand-statement__figure">
+        <blockquote class="knr-brand-statement__quote">
+          <p>{{ section.settings.quote | newline_to_br }}</p>
+        </blockquote>
+        {%- if section.settings.author != blank -%}
+          <figcaption class="knr-brand-statement__author">{{ section.settings.author }}</figcaption>
+        {%- endif -%}
+      </figure>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .knr-brand-statement {
+    position: relative;
+    margin-bottom: var(--knr-section-space-s);
+    display: grid;
+    color: var(--knr-color-bg);
+    isolation: isolate;
+    container-type: inline-size;
+  }
+
+  .knr-brand-statement__media,
+  .knr-brand-statement__content {
+    grid-area: 1 / 1;
+  }
+
+  .knr-brand-statement__media {
+    position: relative;
+    z-index: -1;
+    min-height: var(--knr-brand-statement-max-height);
+  }
+
+  .knr-brand-statement--mobile-image .knr-brand-statement__media {
+    min-height: min(
+      calc(100cqw / var(--knr-brand-statement-ratio-mobile)),
+      var(--knr-brand-statement-max-height)
+    );
+  }
+
+  .knr-brand-statement__media picture {
+    display: contents;
+  }
+
+  .knr-brand-statement__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgb(0 0 0 / var(--knr-brand-statement-overlay, 0));
+  }
+
+  .knr-brand-statement__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .knr-brand-statement__image--placeholder {
+    background-color: var(--knr-color-accent);
+  }
+
+  .knr-brand-statement__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--knr-space-xl);
+    padding: var(--knr-space-3xl) var(--knr-gutter);
+  }
+
+  .knr-brand-statement__eyebrow {
+    margin: 0;
+    font-size: var(--knr-fs-xs);
+  }
+
+  .knr-brand-statement__eyebrow::after {
+    content: '';
+    display: block;
+    width: 1rem;
+    height: 1px;
+    margin-top: var(--knr-space-xs);
+    background-color: currentcolor;
+  }
+
+  .knr-brand-statement__figure {
+    margin: 0;
+  }
+
+  .knr-brand-statement__quote {
+    margin: 0;
+    font-size: 1.375rem;
+    font-weight: 400;
+    line-height: 1.5rem;
+  }
+
+  .knr-brand-statement__quote p {
+    margin: 0;
+  }
+
+  .knr-brand-statement__author {
+    margin-top: var(--knr-space-md);
+    font-size: var(--knr-fs-2xs);
+    line-height: var(--knr-lh-2xs);
+  }
+
+  @media (min-width: 990px) {
+    .knr-brand-statement__content {
+      display: grid;
+      grid-template-columns: 1fr minmax(0, 31.875rem);
+      align-items: center;
+      gap: var(--knr-space-2xl);
+      padding-inline: var(--knr-gutter) calc(var(--knr-gutter) + 2.5rem);
+    }
+
+    .knr-brand-statement__quote {
+      font-size: var(--knr-fs-2xl);
+      line-height: var(--knr-lh-2xl);
+    }
+
+    .knr-brand-statement .knr-brand-statement__media {
+      min-height: min(
+        calc(100cqw / var(--knr-brand-statement-ratio-desktop)),
+        var(--knr-brand-statement-max-height)
+      );
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Brand statement",
+  "class": "knr-brand-statement-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Background image (mobile)",
+      "info": "Optional: otherwise the background image is cropped"
+    },
+    {
+      "type": "range",
+      "id": "max_height",
+      "label": "Maximum height",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 90,
+      "info": "As a % of the screen height. The image defines the height, within this limit."
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "%",
+      "default": 0
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Notre engagement pour une beauté régénérée"
+    },
+    {
+      "type": "textarea",
+      "id": "quote",
+      "label": "Quote"
+    },
+    {
+      "type": "text",
+      "id": "author",
+      "label": "Quote author"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand statement"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,157 @@
+{%- assign faqs = product.metafields.custom.faq.value -%}
+
+{%- if faqs.count > 0 -%}
+  <section class="knr-faq full-width">
+    {%- if section.settings.title != blank -%}
+      <h2 class="knr-faq__title">{{ section.settings.title }}</h2>
+    {%- endif -%}
+
+    <div class="knr-faq__list">
+      {%- for faq in faqs -%}
+        <knr-disclosure class="knr-faq__disclosure">
+        <details
+          class="knr-faq__item"
+          {% if forloop.first and section.settings.open_first %}
+            open
+          {% endif %}
+        >
+          <summary class="knr-faq__question">
+            <span>{{ faq.question }}</span>
+            {% render 'knr-icon', name: 'chevron-down', class: 'knr-faq__chevron' %}
+          </summary>
+          <div class="knr-faq__answer" data-knr-disclosure-content>{{ faq.answer | metafield_tag }}</div>
+        </details>
+        </knr-disclosure>
+      {%- endfor -%}
+    </div>
+  </section>
+
+  <script src="{{ 'knr-disclosure.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% stylesheet %}
+  .knr-faq {
+    margin-bottom: var(--knr-section-space-l);
+    padding-inline: var(--knr-gutter);
+  }
+
+  .knr-faq__title {
+    margin: 0 0 2.5rem;
+    font-size: var(--knr-fs-3xl);
+    font-weight: 400;
+    line-height: var(--knr-lh-3xl);
+    text-align: center;
+  }
+
+  .knr-faq__disclosure {
+    display: block;
+  }
+
+  .knr-faq__item {
+    border-top: 1px solid var(--knr-color-border);
+  }
+
+  .knr-faq__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--knr-space-md);
+    padding-block: 1.25rem;
+    font-size: var(--knr-fs-xl);
+    line-height: var(--knr-lh-xl);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .knr-faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .knr-faq__question:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-faq__answer {
+    margin-top: -0.25rem;
+  }
+
+  .knr-faq__chevron {
+    transition: transform var(--knr-transition);
+  }
+
+  .knr-faq__item[open] .knr-faq__chevron {
+    transform: rotate(180deg);
+  }
+
+  .knr-faq__answer {
+    padding-bottom: 1.25rem;
+    font-size: var(--knr-fs-sm);
+    line-height: var(--knr-lh-lg);
+  }
+
+  .knr-faq__answer p,
+  .knr-faq__answer ul,
+  .knr-faq__answer ol {
+    margin: 0 0 var(--knr-space-xs);
+  }
+
+  .knr-faq__answer :is(p, ul, ol):last-child {
+    margin-bottom: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .knr-faq__chevron {
+      transition: none;
+    }
+  }
+
+  @media (min-width: 990px) {
+    .knr-faq {
+    }
+
+    .knr-faq__title {
+      margin-bottom: var(--knr-space-3xl);
+    }
+
+    .knr-faq__list {
+      max-width: var(--knr-width-narrow);
+      margin-inline: auto;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "FAQ",
+  "class": "knr-faq-section",
+  "enabled_on": {
+    "templates": [
+      "product"
+    ]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Questions fréquentes"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_first",
+      "label": "Open the first question",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "Questions and answers read from the product's custom.faq metafield (knr_faq metaobjects)."
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ"
+    }
+  ]
+}
+{% endschema %}

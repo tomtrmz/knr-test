@@ -1,0 +1,201 @@
+{% doc %}
+  @param {product} card_product - The product to display
+  @param {string} [sizes] - The sizes attribute of the image
+
+  @example
+  {% render 'knr-product-card', card_product: product, sizes: '140px' %}
+{% enddoc %}
+
+{%- liquid
+  assign card_variant = card_product.selected_or_first_available_variant
+  assign image_sizes = sizes | default: '(min-width: 990px) 150px, 40vw'
+  assign add_label = 'knr.product_card.add' | t: title: card_product.title
+  assign choose_label = 'knr.product_card.choose_options' | t: title: card_product.title
+  assign sold_out_label = 'knr.product_card.sold_out' | t: title: card_product.title
+-%}
+
+<article class="knr-product-card">
+  <div class="knr-product-card__media">
+    <a href="{{ card_product.url }}" class="knr-product-card__image-link" tabindex="-1" aria-hidden="true">
+      {%- if card_product.featured_media -%}
+        {{
+          card_product.featured_media
+          | image_url: width: 600
+          | image_tag:
+            class: 'knr-product-card__image',
+            widths: '150, 300, 450, 600',
+            sizes: image_sizes,
+            loading: 'lazy',
+            alt: ''
+        }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'knr-product-card__image' }}
+      {%- endif -%}
+    </a>
+
+    {%- if card_product.has_only_default_variant and card_variant.available -%}
+      <knr-cart-form class="knr-product-card__quick-add">
+        {%- form 'product', card_product -%}
+          <input type="hidden" name="id" value="{{ card_variant.id }}">
+          <button type="submit" name="add" class="knr-product-card__add-button" aria-label="{{ add_label }}"></button>
+          <p class="knr-product-card__error" role="alert" data-knr-cart-error hidden></p>
+        {%- endform -%}
+      </knr-cart-form>
+    {%- elsif card_product.available -%}
+      <a
+        href="{{ card_product.url }}"
+        class="knr-product-card__add-button knr-product-card__quick-add"
+        aria-label="{{ choose_label }}"
+      ></a>
+    {%- else -%}
+      <button
+        type="button"
+        class="knr-product-card__add-button knr-product-card__quick-add"
+        aria-label="{{ sold_out_label }}"
+        disabled
+      ></button>
+    {%- endif -%}
+  </div>
+
+  <div class="knr-product-card__info">
+    <h3 class="knr-product-card__title">
+      <a href="{{ card_product.url }}" class="knr-product-card__link">{{ card_product.title }}</a>
+    </h3>
+    <p class="knr-product-card__price">{{ card_variant.price | money }}</p>
+  </div>
+</article>
+
+{% stylesheet %}
+  .knr-product-card {
+    font-size: var(--knr-fs-2xs);
+    line-height: var(--knr-lh-xs);
+  }
+
+  .knr-product-card__media {
+    position: relative;
+    background-color: var(--knr-color-surface);
+  }
+
+  .knr-product-card__image-link {
+    display: block;
+  }
+
+  .knr-product-card__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+  }
+
+  .knr-product-card__quick-add {
+    position: absolute;
+    bottom: var(--knr-space-xs);
+    left: var(--knr-space-xs);
+  }
+
+  .knr-product-card__add-button {
+    position: relative;
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--knr-radius);
+    background-color: var(--knr-color-bg);
+    color: var(--knr-color-text);
+    cursor: pointer;
+  }
+
+  .knr-product-card__add-button::before,
+  .knr-product-card__add-button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 8px;
+    height: 1px;
+    margin: auto;
+    background-color: currentcolor;
+  }
+
+  .knr-product-card__add-button::after {
+    transform: rotate(90deg);
+  }
+
+  .knr-product-card__add-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .knr-product-card__add-button:focus-visible {
+    outline: 1px solid var(--knr-color-text);
+    outline-offset: 2px;
+  }
+
+  .knr-product-card__add-button[aria-busy='true']::before {
+    width: 8px;
+    height: 8px;
+    border: 1px solid currentcolor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    background: none;
+    animation: knr-product-card-spin 700ms linear infinite;
+  }
+
+  .knr-product-card__add-button[aria-busy='true']::after {
+    display: none;
+  }
+
+  @keyframes knr-product-card-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  .knr-product-card__error {
+    position: absolute;
+    bottom: calc(100% + var(--knr-space-2xs));
+    left: 0;
+    width: max-content;
+    max-width: 10rem;
+    padding: var(--knr-space-2xs);
+    background-color: var(--knr-color-bg);
+    color: var(--knr-color-error);
+  }
+
+  .knr-product-card__error[hidden] {
+    display: none;
+  }
+
+  .knr-product-card__info {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--knr-space-xs);
+    margin-top: var(--knr-space-xs);
+  }
+
+  .knr-product-card__title {
+    margin: 0;
+    font-size: inherit;
+    font-weight: 400;
+  }
+
+  .knr-product-card__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .knr-product-card__link:hover {
+    text-decoration: underline;
+  }
+
+  .knr-product-card__link:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .knr-product-card__price {
+    margin: 0;
+    white-space: nowrap;
+  }
+{% endstylesheet %}

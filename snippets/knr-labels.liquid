@@ -1,0 +1,56 @@
+{% doc %}
+  @param {product} [product] - The product, to show its custom.labels
+  @param {object[]} [labels] - Label entries to show instead (e.g. a review's badges)
+  @param {boolean} [small] - Smaller version (review badges)
+
+  @example
+  {% render 'knr-labels', product: product %}
+  {% render 'knr-labels', labels: review.badges.value, small: true %}
+{% enddoc %}
+
+{%- liquid
+  if labels == blank and product
+    assign labels = product.metafields.custom.labels.value
+  endif
+-%}
+
+{%- if labels.count > 0 -%}
+  <ul class="knr-labels{% if small %} knr-labels--small{% endif %}" role="list">
+    {%- for item in labels -%}
+      <li class="knr-labels__item">{{ item.label }}</li>
+    {%- endfor -%}
+  </ul>
+{%- endif -%}
+
+{% stylesheet %}
+  .knr-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .knr-labels__item {
+    padding: 6px 4px 4px;
+    border: 1px solid var(--knr-color-text);
+    border-radius: var(--knr-radius);
+    background-color: var(--knr-color-bg);
+    color: var(--knr-color-text);
+    font-size: var(--knr-fs-xs);
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .knr-labels--small {
+    display: inline-flex;
+    gap: var(--knr-space-2xs);
+  }
+
+  .knr-labels--small .knr-labels__item {
+    padding: 3px 4px 2px;
+    font-size: var(--knr-fs-3xs);
+  }
+{% endstylesheet %}

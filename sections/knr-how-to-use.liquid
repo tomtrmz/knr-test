@@ -1,0 +1,114 @@
+<knr-carousel class="knr-how-to-use full-width">
+  {%- if section.settings.title != blank -%}
+    <h2 class="knr-how-to-use__title">{{ section.settings.title }}</h2>
+  {%- endif -%}
+
+  <div class="knr-how-to-use__list" data-knr-carousel-track>
+    {% content_for 'blocks' %}
+  </div>
+
+  <div class="knr-how-to-use__progress">
+    {% render 'knr-carousel-progress' %}
+  </div>
+</knr-carousel>
+
+<script src="{{ 'knr-carousel.js' | asset_url }}" defer></script>
+<script src="{{ 'knr-read-more.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+  .knr-how-to-use {
+    display: block;
+    margin-bottom: var(--knr-section-space-xl);
+  }
+
+  .knr-how-to-use__title {
+    margin: 0 0 var(--knr-space-md);
+    padding-inline: var(--knr-gutter);
+    font-size: var(--knr-fs-2xl);
+    font-weight: 400;
+    line-height: var(--knr-lh-2xl);
+  }
+
+  .knr-how-to-use__list {
+    display: flex;
+    gap: var(--knr-space-xs);
+    margin: 0;
+    padding: 0 var(--knr-gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--knr-gutter);
+    scrollbar-width: none;
+    list-style: none;
+    counter-reset: knr-how-to-use-step;
+  }
+
+  .knr-how-to-use__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .knr-how-to-use__list > .shopify-block {
+    display: contents;
+  }
+
+  .knr-how-to-use__list .knr-how-to-use-step {
+    flex: 0 0 15.9375rem;
+    scroll-snap-align: start;
+  }
+
+  .knr-how-to-use__progress {
+    margin-top: var(--knr-space-xl);
+  }
+
+  @media (min-width: 990px) {
+    .knr-how-to-use__progress {
+      display: none;
+    }
+
+    .knr-how-to-use__title {
+      margin-bottom: var(--knr-space-xl);
+    }
+
+    .knr-how-to-use__list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      row-gap: var(--knr-space-xl);
+      overflow: visible;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "How to use",
+  "class": "knr-how-to-use-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "How to use"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "_knr-how-to-use-step"
+    }
+  ],
+  "presets": [
+    {
+      "name": "How to use",
+      "blocks": [
+        {
+          "type": "_knr-how-to-use-step"
+        },
+        {
+          "type": "_knr-how-to-use-step"
+        },
+        {
+          "type": "_knr-how-to-use-step"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
