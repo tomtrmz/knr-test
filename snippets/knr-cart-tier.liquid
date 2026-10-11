@@ -1,0 +1,75 @@
+{% doc %}
+  @param {object} block - A "tier" block of the cart drawer section
+  @param {boolean} reached - Whether the cart reaches the tier threshold
+
+  @example
+  {% render 'knr-cart-tier', block: block, reached: true %}
+{% enddoc %}
+
+<li
+  class="knr-cart-tier{% if reached %} knr-cart-tier--reached{% endif %}"
+  data-knr-patch
+  {{ block.shopify_attributes }}
+>
+  <span class="knr-cart-tier__icon">
+    {% render 'knr-icon', name: block.settings.icon %}
+  </span>
+  <span class="knr-cart-tier__label">
+    {{- block.settings.label | replace: '[count]', block.settings.samples_count -}}
+    <span class="knr-cart-tier__status">{{ 'knr.cart_drawer.tier_reached' | t }}</span>
+  </span>
+</li>
+
+{% stylesheet %}
+  .knr-cart-tier {
+    display: grid;
+    justify-items: center;
+    gap: var(--knr-space-2xs);
+    min-width: 0;
+    text-align: center;
+  }
+
+  .knr-cart-tier__icon {
+    display: grid;
+    place-items: center;
+    width: 1.875rem;
+    height: 1.875rem;
+    border: 1px solid var(--knr-color-progress-border);
+    border-radius: 50%;
+    background-color: var(--knr-color-bg);
+    transition: background-color 300ms ease;
+  }
+
+  .knr-cart-tier--reached .knr-cart-tier__icon {
+    background-color: var(--knr-color-progress);
+  }
+
+  .knr-cart-tier__icon .knr-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .knr-cart-tier__label {
+    font-size: var(--knr-fs-2xs);
+    line-height: var(--knr-lh-sm);
+  }
+
+  .knr-cart-tier__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .knr-cart-tier:not(.knr-cart-tier--reached) .knr-cart-tier__status {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .knr-cart-tier__icon {
+      transition: none;
+    }
+  }
+{% endstylesheet %}

@@ -1,0 +1,16 @@
+{% doc %}
+  Outputs the number of cart items shown to the customer, free samples excluded.
+
+  @example
+  {% capture count %}{% render 'knr-cart-count' %}{% endcapture %}
+{% enddoc %}
+
+{%- liquid
+  assign count = cart.item_count
+  for item in cart.items
+    if item.properties._knr_sample != blank
+      assign count = count | minus: item.quantity
+    endif
+  endfor
+  echo count
+-%}

@@ -8,11 +8,18 @@
   --knr-color-accent-light: #e2d3bb;
   --knr-color-sand: #dcd5c3;
   --knr-color-error: #b3261e;
+  --knr-color-text-light: #717171;
+  --knr-color-line: #f5f5f5;
+  --knr-color-line-strong: #c8c8c8;
+  --knr-color-mist: #f6f8f4;
+  --knr-color-progress: #dcd7ca;
+  --knr-color-progress-border: #d6d1c4;
 
   --knr-fs-3xs: 0.5rem;
   --knr-fs-2xs: 0.625rem;
   --knr-fs-xs: 0.75rem;
   --knr-fs-sm: 0.875rem;
+  --knr-fs-md: 1rem;
   --knr-fs-lg: 1.25rem;
   --knr-fs-xl: 1.5rem;
   --knr-fs-2xl: 2rem;

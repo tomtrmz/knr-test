@@ -28,10 +28,61 @@
         "transparent_on_product": true,
         "transparent_text_color": "#FFFFFF"
       }
+    },
+    "cart_drawer": {
+      "type": "knr-cart-drawer",
+      "settings": {
+        "show_view_cart": true,
+        "footer_text": "Les frais de livraison et codes promo s'appliquent lors du paiement",
+        "final_message": "Félicitations, vous profitez de <strong>tous vos avantages</strong> !",
+        "samples_collection": "echantillons",
+        "samples_title": "Choisissez vos échantillons offerts"
+      },
+      "blocks": {
+        "shipping": {
+          "type": "tier",
+          "settings": {
+            "threshold": 50,
+            "label": "Livraison offerte",
+            "icon": "truck",
+            "message": "Plus que <strong>[amount]</strong> pour profiter de <strong>la livraison offerte</strong>",
+            "reward": "none"
+          }
+        },
+        "samples": {
+          "type": "tier",
+          "settings": {
+            "threshold": 75,
+            "label": "[count] échantillons offerts",
+            "icon": "sample",
+            "message": "Plus que <strong>[amount]</strong> pour recevoir <strong>[count] échantillons offerts</strong>",
+            "reward": "samples",
+            "samples_count": 3
+          }
+        },
+        "gift": {
+          "type": "tier",
+          "settings": {
+            "threshold": 100,
+            "label": "Produit offert",
+            "icon": "gift",
+            "message": "Plus que <strong>[amount]</strong> pour recevoir <strong>un produit offert</strong>",
+            "reward": "gift",
+            "samples_count": 3,
+            "gift_product": "mini-format-offert-serum-precieux-5-ml"
+          }
+        }
+      },
+      "block_order": [
+        "shipping",
+        "samples",
+        "gift"
+      ]
     }
   },
   "order": [
     "announcement_bar",
-    "header"
+    "header",
+    "cart_drawer"
   ]
 }

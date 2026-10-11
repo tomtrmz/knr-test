@@ -1,0 +1,126 @@
+{% doc %}
+  @param {object} product - A sample product
+  @param {string} [key] - Cart line key when the sample is already selected
+
+  @example
+  {% render 'knr-sample-card', product: product, key: item.key %}
+{% enddoc %}
+
+{%- liquid
+  assign variant = product.selected_or_first_available_variant
+  assign title_id = 'KnrSampleTitle-' | append: variant.id
+-%}
+
+<li class="knr-sample-card">
+  <div class="knr-sample-card__media">
+    {%- if product.featured_image -%}
+      {{
+        product.featured_image
+        | image_url: width: 400
+        | image_tag: class: 'knr-sample-card__image', widths: '200, 400', sizes: '200px', loading: 'lazy', alt: ''
+      }}
+    {%- endif -%}
+  </div>
+  <div class="knr-sample-card__info">
+    <p id="{{ title_id }}" class="knr-sample-card__title">{{ product.title }}</p>
+    {%- unless product.has_only_default_variant -%}
+      <p class="knr-sample-card__variant">{{ variant.title }}</p>
+    {%- endunless -%}
+  </div>
+  <button
+    type="button"
+    class="knr-sample-card__button"
+    aria-describedby="{{ title_id }}"
+    data-knr-sample="{{ variant.id }}"
+    {% if key != blank %}
+      data-key="{{ key }}"
+      data-selected
+    {% endif %}
+    {% unless variant.available %}
+      data-unavailable
+      disabled
+    {% endunless %}
+  >
+    {%- if variant.available -%}
+      <span class="knr-sample-card__add">{{ 'knr.cart_drawer.samples.add' | t }}</span>
+      <span class="knr-sample-card__remove">{{ 'knr.cart_drawer.samples.remove' | t }}</span>
+    {%- else -%}
+      {{ 'knr.cart_drawer.samples.sold_out' | t }}
+    {%- endif -%}
+  </button>
+</li>
+
+{% stylesheet %}
+  .knr-sample-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: var(--knr-space-md);
+    border-right: 1px solid var(--knr-color-line-strong);
+    border-bottom: 1px solid var(--knr-color-line-strong);
+  }
+
+  .knr-sample-card:nth-child(3n) {
+    border-right: 0;
+  }
+
+  .knr-sample-card__media {
+    align-self: stretch;
+    aspect-ratio: 6 / 7;
+    overflow: hidden;
+    background-color: var(--knr-color-mist);
+  }
+
+  .knr-sample-card__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .knr-sample-card__info {
+    display: grid;
+    gap: var(--knr-space-2xs);
+    margin: var(--knr-space-xs) var(--knr-space-sm) var(--knr-space-md);
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-sm);
+  }
+
+  .knr-sample-card__info p {
+    margin: 0;
+  }
+
+  .knr-sample-card__title {
+    font-weight: 500;
+  }
+
+  .knr-sample-card__button {
+    margin: auto var(--knr-space-sm) 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--knr-color-text);
+    font: inherit;
+    font-size: var(--knr-fs-xs);
+    font-weight: 500;
+    line-height: var(--knr-lh-sm);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .knr-sample-card__button:disabled {
+    color: var(--knr-color-text-light);
+    text-decoration: none;
+    cursor: not-allowed;
+  }
+
+  .knr-sample-card__button:focus-visible {
+    outline: 1px solid var(--knr-color-text);
+    outline-offset: 2px;
+  }
+
+  .knr-sample-card__button[data-selected] .knr-sample-card__add,
+  .knr-sample-card__button:not([data-selected]) .knr-sample-card__remove {
+    display: none;
+  }
+{% endstylesheet %}

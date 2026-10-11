@@ -13,9 +13,14 @@
   assign drawer_id = 'knr-menu-drawer-' | append: section.id
   assign logo_sizes = '(min-width: 990px) ' | append: section.settings.logo_width | append: 'px, ' | append: section.settings.logo_width_mobile | append: 'px'
 
+  capture cart_count
+    render 'knr-cart-count'
+  endcapture
+  assign cart_count = cart_count | plus: 0
+
   assign cart_label = 'knr.header.cart' | t
-  if cart.item_count > 0
-    assign cart_items_label = 'knr.header.cart_items' | t: count: cart.item_count
+  if cart_count > 0
+    assign cart_items_label = 'knr.header.cart_items' | t: count: cart_count
     assign cart_label = cart_label | append: ', ' | append: cart_items_label
   endif
 -%}
@@ -92,10 +97,12 @@
           href="{{ routes.cart_url }}"
           class="knr-header__icon-button"
           aria-label="{{ cart_label }}"
+          aria-haspopup="dialog"
+          data-knr-cart-drawer-open
         >
           {% render 'knr-icon', name: 'cart' %}
-          {%- if cart.item_count > 0 -%}
-            <span class="knr-header__cart-count" aria-hidden="true">{{ cart.item_count }}</span>
+          {%- if cart_count > 0 -%}
+            <span class="knr-header__cart-count" aria-hidden="true">{{ cart_count }}</span>
           {%- endif -%}
         </a>
       </knr-cart-icon>

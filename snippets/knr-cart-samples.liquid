@@ -1,0 +1,150 @@
+{% doc %}
+  @param {string} title - Module title
+  @param {string} [subtitle] - Short reward reminder under the title
+  @param {number} limit - Number of samples the customer can choose
+  @param {string} panel_id - ID of the selection panel the button opens
+
+  @example
+  {% render 'knr-cart-samples', title: 'Choisissez vos échantillons offerts', subtitle: '3 échantillons offerts', limit: 3, panel_id: 'KnrCartSamples' %}
+{% enddoc %}
+
+{%- liquid
+  assign selected_count = 0
+  for item in cart.items
+    if item.properties._knr_sample != blank
+      assign selected_count = selected_count | plus: 1
+    endif
+  endfor
+-%}
+
+<div class="knr-cart-samples">
+  <div>
+    <p class="knr-cart-samples__title">{{ title }}</p>
+    {%- if subtitle != blank -%}
+      <p class="knr-cart-samples__subtitle">{{ subtitle }}</p>
+    {%- endif -%}
+  </div>
+
+  <div class="knr-cart-samples__row">
+    <ul class="knr-cart-samples__slots" role="list" data-knr-samples-open>
+      {%- assign shown = 0 -%}
+      {%- for item in cart.items -%}
+        {%- if item.properties._knr_sample != blank and shown < limit -%}
+          {%- assign shown = shown | plus: 1 -%}
+          <li class="knr-cart-samples__slot">
+            {%- if item.image -%}
+              {{
+                item.image
+                | image_url: width: 64
+                | image_tag: class: 'knr-cart-samples__image', width: 32, height: 32, loading: 'lazy', alt: item.product.title
+              }}
+            {%- endif -%}
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- assign empty_slots = limit | minus: shown -%}
+      {%- for i in (1..empty_slots) -%}
+        <li class="knr-cart-samples__slot" aria-hidden="true">
+          {% render 'knr-icon', name: 'plus' %}
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <button
+      type="button"
+      class="knr-cart-samples__button"
+      aria-controls="{{ panel_id }}"
+      aria-expanded="false"
+      data-knr-samples-open
+      data-knr-focus="samples-open"
+    >
+      {%- if selected_count > 0 -%}
+        {{- 'knr.cart_drawer.samples.edit' | t -}}
+      {%- else -%}
+        {{- 'knr.cart_drawer.samples.choose' | t -}}
+      {%- endif -%}
+    </button>
+  </div>
+</div>
+
+{% stylesheet %}
+  .knr-cart-samples {
+    display: grid;
+    gap: var(--knr-space-sm);
+    margin-block: var(--knr-space-md);
+    padding: 1.25rem 1.25rem var(--knr-space-md);
+    background-color: var(--knr-color-mist);
+  }
+
+  .knr-cart-samples p {
+    margin: 0;
+  }
+
+  .knr-cart-samples__title {
+    font-size: var(--knr-fs-sm);
+    line-height: var(--knr-lh-md);
+  }
+
+  .knr-cart-samples__subtitle {
+    font-size: var(--knr-fs-2xs);
+    line-height: var(--knr-lh-xs);
+  }
+
+  .knr-cart-samples__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--knr-space-md);
+  }
+
+  .knr-cart-samples__slots {
+    display: flex;
+    cursor: pointer;
+    gap: 0.625rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .knr-cart-samples__slot {
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: 2rem;
+    height: 2rem;
+    overflow: hidden;
+    border: 2px solid var(--knr-color-line-strong);
+    background-color: var(--knr-color-bg);
+  }
+
+  .knr-cart-samples__slot .knr-icon {
+    width: 0.625rem;
+    height: 0.625rem;
+    color: var(--knr-color-line-strong);
+  }
+
+  .knr-cart-samples__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .knr-cart-samples__button {
+    flex-shrink: 0;
+    padding: calc(var(--knr-space-xs) - 1px) var(--knr-space-lg);
+    border: 1px solid var(--knr-color-text);
+    background-color: var(--knr-color-bg);
+    color: var(--knr-color-text);
+    font: inherit;
+    font-size: var(--knr-fs-xs);
+    font-weight: 500;
+    line-height: var(--knr-lh-sm);
+    cursor: pointer;
+  }
+
+  .knr-cart-samples__button:focus-visible {
+    outline: 1px solid var(--knr-color-text);
+    outline-offset: 2px;
+  }
+{% endstylesheet %}

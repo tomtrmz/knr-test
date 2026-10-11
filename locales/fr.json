@@ -157,6 +157,42 @@
       "no_results": "Aucun avis ne correspond à ce filtre.",
       "write": "Écrire un avis",
       "ask": "Poser une question"
+    },
+    "cart_drawer": {
+      "title": "Votre panier",
+      "close": "Fermer le panier",
+      "empty": "Votre panier est vide.",
+      "continue": "Continuer mes achats",
+      "decrease": "Diminuer la quantité de {{ product }}",
+      "increase": "Augmenter la quantité de {{ product }}",
+      "quantity": "Quantité",
+      "remove": "Supprimer",
+      "remove_label": "Supprimer {{ product }}",
+      "offered": "Offert",
+      "checkout": "Passer au paiement",
+      "view_cart": "Voir mon panier",
+      "error": "Une erreur est survenue. Veuillez réessayer.",
+      "reviews_count": {
+        "one": "{{ count }} avis",
+        "other": "{{ count }} avis"
+      },
+      "items_count": {
+        "one": "{{ count }} article",
+        "other": "{{ count }} articles"
+      },
+      "progress_label": "Progression vers vos avantages",
+      "tier_reached": "(débloqué)",
+      "samples": {
+        "choose": "Choisir",
+        "edit": "Modifier",
+        "add": "Ajouter",
+        "remove": "Retirer",
+        "sold_out": "Épuisé",
+        "back": "Retour au panier",
+        "submit": "Valider votre choix",
+        "status_one": "{{ selected }} échantillon choisi sur {{ limit }}",
+        "status_other": "{{ selected }} échantillons choisis sur {{ limit }}"
+      }
     }
   }
 }

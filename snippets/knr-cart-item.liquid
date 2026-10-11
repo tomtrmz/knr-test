@@ -1,0 +1,250 @@
+{% doc %}
+  @param {object} item - A cart line item
+  @param {boolean} [gift] - Whether the line is the free product
+
+  @example
+  {% render 'knr-cart-item', item: item %}
+{% enddoc %}
+
+{%- liquid
+  assign is_gift = gift | default: false
+  if item.properties._knr_gift != blank
+    assign is_gift = true
+  endif
+
+  assign rating_value = blank
+  assign rating_count = 0
+  assign reviews = item.product.metafields.custom.reviews.value
+  if reviews.size > 0
+    capture review_stats
+      render 'knr-review-stats', reviews: reviews
+    endcapture
+    assign review_stats = review_stats | split: '|'
+    assign rating_count = review_stats[0] | plus: 0
+    if rating_count > 0
+      assign rating_value = review_stats[1] | times: 1.0 | divided_by: rating_count
+    endif
+  endif
+
+  assign product_title = item.product.title | escape
+-%}
+
+<li class="knr-cart-item" data-knr-cart-item>
+  <a href="{{ item.url }}" class="knr-cart-item__media" tabindex="-1" aria-hidden="true">
+    {%- if item.image -%}
+      {{
+        item.image
+        | image_url: width: 240
+        | image_tag: class: 'knr-cart-item__image', widths: '120, 240', sizes: '120px', loading: 'lazy', alt: ''
+      }}
+    {%- endif -%}
+  </a>
+
+  <div class="knr-cart-item__info">
+    <div class="knr-cart-item__top">
+      <div class="knr-cart-item__details">
+        {%- if rating_value != blank -%}
+          <p class="knr-cart-item__rating">
+            {% render 'knr-rating-stars', rating: rating_value %}
+            <span>{{ 'knr.cart_drawer.reviews_count' | t: count: rating_count }}</span>
+          </p>
+        {%- endif -%}
+        <a href="{{ item.url }}" class="knr-cart-item__title">{{ item.product.title }}</a>
+        {%- unless item.product.has_only_default_variant -%}
+          <p class="knr-cart-item__variant">{{ item.variant.title }}</p>
+        {%- endunless -%}
+      </div>
+
+      <p class="knr-cart-item__price">
+        {%- if item.final_line_price == 0 -%}
+          <span class="knr-cart-item__offered">{{ 'knr.cart_drawer.offered' | t }}</span>
+        {%- else -%}
+          {%- if item.original_line_price > item.final_line_price -%}
+            <s class="knr-cart-item__compare">{{ item.original_line_price | money }}</s>
+          {%- endif -%}
+          <span>{{ item.final_line_price | money }}</span>
+        {%- endif -%}
+      </p>
+    </div>
+
+    <div class="knr-cart-item__bottom">
+      {%- unless is_gift -%}
+        <div class="knr-cart-item__quantity" role="group" aria-label="{{ 'knr.cart_drawer.quantity' | t }}">
+          <button
+            type="button"
+            class="knr-cart-item__quantity-button"
+            data-knr-cart-quantity="{{ item.quantity | minus: 1 }}"
+            data-key="{{ item.key }}"
+            data-knr-focus="{{ item.key }}-minus"
+            aria-label="{{ 'knr.cart_drawer.decrease' | t: product: product_title }}"
+          >
+            {% render 'knr-icon', name: 'minus' %}
+          </button>
+          <span class="knr-cart-item__quantity-value">{{ item.quantity }}</span>
+          <button
+            type="button"
+            class="knr-cart-item__quantity-button"
+            data-knr-cart-quantity="{{ item.quantity | plus: 1 }}"
+            data-key="{{ item.key }}"
+            data-knr-focus="{{ item.key }}-plus"
+            aria-label="{{ 'knr.cart_drawer.increase' | t: product: product_title }}"
+          >
+            {% render 'knr-icon', name: 'plus' %}
+          </button>
+        </div>
+      {%- endunless -%}
+
+      <button
+        type="button"
+        class="knr-cart-item__remove"
+        data-knr-cart-quantity="0"
+        data-key="{{ item.key }}"
+        data-knr-focus="{{ item.key }}-remove"
+        {% if is_gift %}
+          data-knr-cart-gift
+        {% endif %}
+        aria-label="{{ 'knr.cart_drawer.remove_label' | t: product: product_title }}"
+      >
+        {{- 'knr.cart_drawer.remove' | t -}}
+      </button>
+    </div>
+  </div>
+</li>
+
+{% stylesheet %}
+  .knr-cart-item {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    align-items: start;
+    border-bottom: 1px solid var(--knr-color-line);
+  }
+
+  .knr-cart-item__media {
+    display: block;
+    padding-block: var(--knr-space-md);
+  }
+
+  .knr-cart-item__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .knr-cart-item__info {
+    display: grid;
+    gap: var(--knr-space-md);
+    padding: 1.25rem 0 var(--knr-space-sm) 1.25rem;
+    font-size: var(--knr-fs-xs);
+    line-height: var(--knr-lh-sm);
+  }
+
+  .knr-cart-item__top {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--knr-space-md);
+  }
+
+  .knr-cart-item__details {
+    display: grid;
+    gap: var(--knr-space-2xs);
+    min-width: 0;
+  }
+
+  .knr-cart-item__details p,
+  .knr-cart-item__price {
+    margin: 0;
+  }
+
+  .knr-cart-item__rating {
+    display: flex;
+    align-items: center;
+    gap: var(--knr-space-2xs);
+    font-size: var(--knr-fs-2xs);
+    line-height: var(--knr-lh-xs);
+    text-transform: uppercase;
+  }
+
+  .knr-cart-item__title {
+    color: inherit;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .knr-cart-item__title:hover {
+    text-decoration: underline;
+  }
+
+  .knr-cart-item__price {
+    display: grid;
+    font-weight: 500;
+    justify-items: end;
+    flex-shrink: 0;
+    text-align: end;
+  }
+
+  .knr-cart-item__compare {
+    color: var(--knr-color-muted);
+  }
+
+  .knr-cart-item__offered {
+    text-transform: uppercase;
+  }
+
+  .knr-cart-item__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--knr-space-md);
+  }
+
+  .knr-cart-item__quantity {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--knr-color-line);
+  }
+
+  .knr-cart-item__quantity-button {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .knr-cart-item__quantity-button .knr-icon {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .knr-cart-item__quantity-value {
+    width: 1.5625rem;
+    font-size: var(--knr-fs-sm);
+    line-height: var(--knr-lh-md);
+    text-align: center;
+  }
+
+  .knr-cart-item__remove {
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--knr-color-text-light);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .knr-cart-item__remove:hover {
+    text-decoration: underline;
+  }
+
+  .knr-cart-item__quantity-button:focus-visible,
+  .knr-cart-item__remove:focus-visible,
+  .knr-cart-item__title:focus-visible {
+    outline: 1px solid currentcolor;
+    outline-offset: 2px;
+  }
+{% endstylesheet %}

@@ -157,6 +157,42 @@
       "no_results": "No review matches this filter.",
       "write": "Write a review",
       "ask": "Ask a question"
+    },
+    "cart_drawer": {
+      "title": "Your cart",
+      "close": "Close the cart",
+      "empty": "Your cart is empty.",
+      "continue": "Continue shopping",
+      "decrease": "Decrease the quantity of {{ product }}",
+      "increase": "Increase the quantity of {{ product }}",
+      "quantity": "Quantity",
+      "remove": "Remove",
+      "remove_label": "Remove {{ product }}",
+      "offered": "Free",
+      "checkout": "Checkout",
+      "view_cart": "View my cart",
+      "error": "Something went wrong. Please try again.",
+      "reviews_count": {
+        "one": "{{ count }} review",
+        "other": "{{ count }} reviews"
+      },
+      "items_count": {
+        "one": "{{ count }} item",
+        "other": "{{ count }} items"
+      },
+      "progress_label": "Progress toward your rewards",
+      "tier_reached": "(unlocked)",
+      "samples": {
+        "choose": "Choose",
+        "edit": "Edit",
+        "add": "Add",
+        "remove": "Remove",
+        "sold_out": "Sold out",
+        "back": "Back to cart",
+        "submit": "Confirm my choice",
+        "status_one": "{{ selected }} of {{ limit }} sample selected",
+        "status_other": "{{ selected }} of {{ limit }} samples selected"
+      }
     }
   }
 }

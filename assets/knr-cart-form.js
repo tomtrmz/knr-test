@@ -21,9 +21,7 @@
       this.showError('');
 
       const formData = new FormData(this.form);
-      const sectionIds = [...document.querySelectorAll('[data-knr-cart-section]')].map(
-        (element) => element.dataset.knrCartSection,
-      );
+      const sectionIds = window.KnrCart.getSectionIds();
       if (sectionIds.length) formData.append('sections', sectionIds.join(','));
 
       try {
@@ -36,15 +34,15 @@
 
         if (!response.ok) {
           const isCartRule = response.status === 422 && data.description;
-          throw new Error(isCartRule ? data.description : this.dataset.errorMessage);
+          const error = new Error(isCartRule ? data.description : this.dataset.errorMessage);
+          error.status = response.status;
+          throw error;
         }
 
-        document.dispatchEvent(
-          new CustomEvent('knr:cart:updated', { detail: { sections: data.sections ?? {} } }),
-        );
+        window.KnrCart.notify(data, { open: true });
         this.showAdded(button);
       } catch (error) {
-        this.showError(error.message || this.dataset.errorMessage);
+        this.showError((error.status && error.message) || this.dataset.errorMessage);
       } finally {
         this.setLoading(button, false);
       }

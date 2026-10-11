@@ -1,0 +1,16 @@
+{% doc %}
+  Outputs, in cents, the cart amount that counts toward the cart drawer tiers.
+
+  @example
+  {% capture total %}{% render 'knr-cart-qualifying-total' %}{% endcapture %}
+{% enddoc %}
+
+{%- liquid
+  assign total = 0
+  for item in cart.items
+    if item.properties._knr_gift == blank and item.properties._knr_sample == blank
+      assign total = total | plus: item.final_line_price
+    endif
+  endfor
+  echo total
+-%}

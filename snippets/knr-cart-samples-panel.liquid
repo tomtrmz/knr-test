@@ -1,0 +1,206 @@
+{% doc %}
+  @param {string} id - Panel ID, referenced by the module button
+  @param {string} title - Panel title
+  @param {object} collection - Collection listing the samples
+  @param {number} limit - Number of samples the customer can choose
+
+  @example
+  {% render 'knr-cart-samples-panel', id: 'KnrCartSamples', title: 'Choisissez vos échantillons', collection: collection, limit: 3 %}
+{% enddoc %}
+
+{%- liquid
+  assign title_id = id | append: '-title'
+  assign counter = '0/' | append: limit
+-%}
+
+<knr-cart-samples
+  id="{{ id }}"
+  class="knr-cart-samples-panel"
+  role="region"
+  aria-labelledby="{{ title_id }}"
+  data-limit="{{ limit }}"
+  data-status-one="{{ 'knr.cart_drawer.samples.status_one' | t: selected: '[selected]', limit: limit }}"
+  data-status-other="{{ 'knr.cart_drawer.samples.status_other' | t: selected: '[selected]', limit: limit }}"
+  hidden
+>
+  <div class="knr-cart-samples-panel__header">
+    <button
+      type="button"
+      class="knr-cart-samples-panel__back"
+      aria-label="{{ 'knr.cart_drawer.samples.back' | t | escape }}"
+      data-knr-samples-close
+    >
+      {% render 'knr-icon', name: 'arrow-left' %}
+    </button>
+    <h3 id="{{ title_id }}" class="knr-cart-samples-panel__title" tabindex="-1">{{ title }}</h3>
+    <span class="knr-cart-samples-panel__counter" aria-hidden="true" data-knr-samples-counter>{{ counter }}</span>
+  </div>
+
+  <p class="knr-cart-samples-panel__status" aria-live="polite" data-knr-samples-status></p>
+
+  <div class="knr-cart-samples-panel__body">
+    <ul class="knr-cart-samples-panel__grid" role="list">
+      {%- for product in collection.products limit: 24 -%}
+        {%- liquid
+          assign key = blank
+          for item in cart.items
+            if item.properties._knr_sample != blank and item.product_id == product.id
+              assign key = item.key
+              break
+            endif
+          endfor
+        -%}
+        {% render 'knr-sample-card', product: product, key: key %}
+      {%- endfor -%}
+    </ul>
+  </div>
+
+  <div class="knr-cart-samples-panel__footer">
+    <button type="button" class="knr-cart-samples-panel__submit" data-knr-samples-submit data-knr-focus="samples-open">
+      {{ 'knr.cart_drawer.samples.submit' | t }}
+      <span class="knr-cart-samples-panel__separator" aria-hidden="true"></span>
+      <span data-knr-samples-counter>{{ counter }}</span>
+    </button>
+  </div>
+</knr-cart-samples>
+
+{% stylesheet %}
+  .knr-cart-samples-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--knr-color-bg);
+    translate: 0 0;
+    transition:
+      translate 300ms ease,
+      display 300ms ease allow-discrete;
+  }
+
+  .knr-cart-samples-panel[hidden] {
+    display: none;
+    translate: 100% 0;
+  }
+
+  @starting-style {
+    .knr-cart-samples-panel:not([hidden]) {
+      translate: 100% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .knr-cart-samples-panel {
+      transition: none;
+    }
+  }
+
+  .knr-cart-samples-panel__header {
+    display: flex;
+    align-items: center;
+    gap: var(--knr-space-sm);
+    padding: var(--knr-space-md) var(--knr-space-md) 1.125rem;
+    border-bottom: 1px solid var(--knr-color-line-strong);
+    font-size: var(--knr-fs-sm);
+    font-weight: 500;
+    line-height: var(--knr-lh-md);
+  }
+
+  .knr-cart-samples-panel__back {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .knr-cart-samples-panel__back::after {
+    position: absolute;
+    inset: -0.5rem;
+    content: '';
+  }
+
+  .knr-cart-samples-panel__back .knr-icon {
+    width: 1rem;
+    height: 0.75rem;
+  }
+
+  .knr-cart-samples-panel__title {
+    flex: 1;
+    margin: 0;
+    font: inherit;
+  }
+
+  .knr-cart-samples-panel__title:focus {
+    outline: none;
+  }
+
+
+  .knr-cart-samples-panel__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .knr-cart-samples-panel__body {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .knr-cart-samples-panel__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .knr-cart-samples-panel__footer {
+    padding: var(--knr-space-md) 1.25rem 0.625rem;
+  }
+
+  .knr-cart-samples-panel__submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--knr-space-xs);
+    width: 100%;
+    padding: calc(var(--knr-space-sm) - 1px) var(--knr-space-lg);
+    border: 1px solid var(--knr-color-text);
+    background-color: var(--knr-color-text);
+    color: var(--knr-color-bg);
+    font: inherit;
+    font-size: var(--knr-fs-sm);
+    font-weight: 500;
+    line-height: var(--knr-lh-md);
+    cursor: pointer;
+  }
+
+  .knr-cart-samples-panel__submit:focus-visible,
+  .knr-cart-samples-panel__back:focus-visible {
+    outline: 1px solid var(--knr-color-text);
+    outline-offset: 2px;
+  }
+
+  .knr-cart-samples-panel__separator {
+    width: 1px;
+    height: 0.75rem;
+    background-color: currentcolor;
+  }
+
+  .knr-cart-samples-panel[aria-busy='true'] {
+    cursor: progress;
+  }
+
+  .knr-cart-samples-panel[aria-busy='true'] button {
+    pointer-events: none;
+  }
+{% endstylesheet %}
